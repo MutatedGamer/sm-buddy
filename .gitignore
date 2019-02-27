@@ -24,4 +24,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-*.swp
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
