@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 
+import { AuthUserContext, withAuthorization } from '../Session';
 import { withFirebase } from '../Firebase';
+import { Container, Row, Col } from 'react-bootstrap';
+import { Card } from 'semantic-ui-react';
+import FAB from '../FAB';
 
 class AdminPage extends Component {
   constructor(props) {
@@ -43,32 +47,43 @@ class AdminPage extends Component {
     const { users, loading } = this.state;
 
     return (
-      <div>
-        <h1>Admin</h1>
-
+            <Row>
+                <Col>
+                    <h1>Admin</h1>
         {loading && <div>Loading ...</div>}
-
         <UserList users={users} />
-      </div>
+        <div className="fabContainer" style={fabStyle}>
+            <FAB />
+        </div>
+                </Col>
+            </Row>
+
+
     );
     }
 }
 
+const fabStyle = {
+    position: 'fixed',
+    bottom: 15,
+    right: 15,
+}
 
 const UserList = ({ users }) => (
-    <ul>
-      {users.map(user => (
-        <li key={user.key}>
-          <span>
-            <strong>E-Mail:</strong> {user.email}
-          </span>
-          <span>
-            <strong>Username:</strong> {user.username}
-          </span>
-        </li>
-      ))}
-    </ul>
+    <div className="d-flex flex-wrap justify-content-start">
+        {users.map(user => (
+            <div key={user.key} className="p-2">
+                <Card>
+                    <Card.Content header="User"></Card.Content>
+                    <Card.Content description={user.username}></Card.Content>
+                    <Card.Content description={user.email}></Card.Content>
+                </Card>
+            </div>
+        ))}
+    </div>
   );
 
 
-export default withFirebase(AdminPage);
+const condition = authUser => !!authUser;
+
+export default withAuthorization(condition)(AdminPage);

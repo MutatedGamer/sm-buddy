@@ -1,0 +1,20 @@
+{
+    "name": "@bit/semantic-org.semantic-ui-react.card",
+    "version": "0.85.0",
+    "homepage": "https://bitsrc.io/semantic-org/semantic-ui-react/card",
+    "main": "dist/views/Card/index.js",
+    "dependencies": {
+        "classnames": "^2.2.6",
+        "prop-types": "^15.6.2",
+        "lodash": "^4.17.11",
+        "@bit/semantic-org.semantic-ui-react.image": "0.85.0",
+        "@bit/semantic-org.semantic-ui-react.internal.genericd": "0.85.0",
+        "@bit/semantic-org.semantic-ui-react.internal.utils.index": "0.85.0"
+    },
+    "devDependencies": {},
+    "peerDependencies": {
+        "react": "^16.3.0"
+    },
+    "componentRootFolder": "components/card",
+    "license": "SEE LICENSE IN LICENSE"
+}
