@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@bit/semantic-org.semantic-ui-react.card": "file:./components/card",
+    "@fortawesome/fontawesome-svg-core": "^1.2.15",
     "@fortawesome/free-solid-svg-icons": "^5.7.2",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "@material-ui/core": "^3.9.2",
@@ -593,6 +594,7 @@
     "mixin-deep": "^1.3.1",
     "mixin-object": "^2.0.1",
     "mkdirp": "^0.5.1",
+    "moment": "^2.24.0",
     "move-concurrently": "^1.0.1",
     "ms": "^2.1.1",
     "multicast-dns": "^6.2.3",
@@ -792,6 +794,8 @@
     "react": "^16.8.3",
     "react-app-polyfill": "^0.2.1",
     "react-bootstrap": "^1.0.0-beta.5",
+    "react-bootstrap-time-picker": "^1.0.3",
+    "react-datetime": "^2.16.3",
     "react-dev-utils": "^7.0.3",
     "react-dom": "^16.8.3",
     "react-error-overlay": "^5.1.3",
@@ -936,6 +940,7 @@
     "through": "^2.3.8",
     "through2": "^2.0.5",
     "thunky": "^1.0.3",
+    "time-number": "^1.1.0",
     "timers-browserify": "^2.0.10",
     "timsort": "^0.3.0",
     "tmp": "^0.0.33",
@@ -960,6 +965,7 @@
     "type-check": "^0.3.2",
     "type-is": "^1.6.16",
     "typedarray": "^0.0.6",
+    "typescript": "^3.3.3333",
     "ua-parser-js": "^0.7.19",
     "uglify-js": "^3.4.9",
     "unicode-canonical-property-names-ecmascript": "^1.0.4",
@@ -1051,7 +1057,9 @@
     "yargs": "^11.1.0",
     "yargs-parser": "^9.0.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "natives": "^1.1.6"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

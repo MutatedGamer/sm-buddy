@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Button, Col, Row, Container, Form } from 'react-bootstrap';
-import { Header, Input, TextArea, List } from 'semantic-ui-react';
+import InputGroup from 'react-bootstrap/InputGroup';
+import TimePicker from '../../TimePicker';
+import { Header } from 'semantic-ui-react';
 
 
 class PlayActor extends Component {
@@ -25,18 +27,35 @@ class PlayActor extends Component {
     }));
   }
 
+  removeCharacter = (i, charIndx, e) => {
+    let actors = [...this.state.actors];
+    let characters = actors[i]["characters"];
+    console.log(characters);
+    if (characters.length == 1) {
+      return;
+    } else {
+      let newCharacters = characters.slice(0, charIndx).concat(characters.slice(charIndx+1, characters.length));
+      actors[i]["characters"] = newCharacters;
+      this.setState((prevState) => ({
+        actors
+      }));
+    }
+  }
+
   handleChange = (e) => {
-    if (["name", "notes", "character"].some(r => e.target.className.includes(r)) ) {
+    console.log(e.target.value);
+    let actors = [...this.state.actors];
+    if (e.target.dataset.type == "outer") {
+      actors[e.target.dataset.actorid][e.target.dataset.attr] = e.target.value;
+      this.setState((prevState) => ({
+        actors
+      }));
+    } else if (e.target.dataset.type == "inner") {
       console.log('here');
-      let actors = [...this.state.actors];
-      if (e.target.className.includes("name")) {
-        actors[e.target.dataset.id]["name"] = e.target.value;
-      } else if (e.target.className.includes("notes")) {
-        actors[e.target.dataset.id]["notes"] = e.target.value;
-      } else if (e.target.className.includes("character")) {
-        actors[e.target.dataset.id]["characters"][e.target.dataset.charid] = e.target.value;
-      }
-      this.setState({ actors }, () => console.log(this.state.actors))
+      actors[e.target.dataset.actorid][e.target.dataset.attr][e.target.dataset.attrid] = e.target.value;
+      this.setState((prevState) => ({
+        actors
+      }));
     } else {
       this.setState({ [e.target.name]: e.target.value })
     }
@@ -58,8 +77,6 @@ class PlayActor extends Component {
         values.name === '';
     let {actors} = this.state;
     return (
-    <Row>
-      <Col>
         <Form onChange={this.handleChange}>
           <Header as="h1">Actor</Header>
 
@@ -70,37 +87,82 @@ class PlayActor extends Component {
                     <Col>
                         <Form.Group>
                           <Form.Label>Name</Form.Label>
-                          <Form.Control type="text" className="name" data-id={indx} />
+                          <Form.Control type="text" data-type="outer" data-attr="name" data-actorid={indx} />
                         </Form.Group>
-                    </Col>
-                  </Row>
-                    <Row>
-                    <Col xs={{ span: 11, offset: 1}}>
                         <Form.Group>
                           <Form.Label>Characters</Form.Label>
                             { actors[indx]["characters"].map((val, charIndx) => {
+                                const last = charIndx == actors[indx]["characters"].length - 1;
                                 return (
-                                  <Form.Control className="character" key={charIndx} type="text" data-id={indx} data-charid={charIndx} id={charIndx}/>
-                                )
+                                  <div key={charIndx}>
+                                    {last ? (
+                                      <InputGroup className="mb-3">
+                                        <InputGroup.Prepend>
+                                          <Button variant="danger" onClick={this.removeCharacter.bind(this, indx, charIndx)}>-</Button>
+                                        </InputGroup.Prepend>
+                                        <Form.Control
+                                          type="text"
+                                          data-type="inner"
+                                          data-attr="characters"
+                                          data-actorid={indx}
+                                          data-attrid={charIndx}
+                                          aria-describedby="basic-addon2"
+                                          value={val}
+                                          onChange={()=>{}}
+                                        />
+                                        <InputGroup.Append>
+                                          <Button variant="success" onClick={this.addCharacter.bind(this, indx)}>Add Character</Button>
+                                        </InputGroup.Append>
+                                      </InputGroup>
+                                    ) : (
+                                      <InputGroup className="mb-3">
+                                        <InputGroup.Prepend>
+                                          <Button variant="danger" onClick={this.removeCharacter.bind(this, indx, charIndx)}>-</Button>
+                                        </InputGroup.Prepend>
+                                        <Form.Control
+                                          type="text"
+                                          data-type="inner"
+                                          data-attr="characters"
+                                          data-actorid={indx}
+                                          data-attrid={charIndx}
+                                          aria-describedby="basic-addon2"
+                                          value={val}
+                                          onChange={()=>{}}
+                                        />
+                                      </InputGroup>
+                                    )}
+                                  </div>
+                                );
                               })
                             }
                         </Form.Group>
-                        <Button variant="primary" onClick={this.addCharacter.bind(this, indx)}>Add Character</Button>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col xs={{ span: 11, offset: 1}}>
-                        <Form.Group>
-                          <Form.Label>Unavailibility</Form.Label>
-                          <Input />
+                        <Form.Group controlId="exampleForm.ControlSelect1">
+                          <Form.Label>Unavailibilities</Form.Label>
+                            <Form.Row>
+                              <Form.Group as={Col}>
+                                <Form.Control as="select">
+                                  <option value="sunday">Sunday</option>
+                                  <option value="monday">Monday</option>
+                                  <option value="tuesday">Tuesday</option>
+                                  <option value="wednesday">Wednesday</option>
+                                  <option value="thursday">Thursday</option>
+                                  <option value="friday">Friday</option>
+                                  <option value="saturday">Saturday</option>
+                                </Form.Control>
+                              </Form.Group>
+                              <Form.Group as={Col}>
+                                  <TimePicker   start="9:00" end="22:00" step={15} />
+                              </Form.Group>
+                              <Form.Group as={Col}>
+                                  <TimePicker   start="9:00" end="22:00" step={15} />
+                              </Form.Group>
+                            </Form.Row>
                         </Form.Group>
                     </Col>
-                  </Row>
-                  <Row>
-                    <Col xs={{ span: 11, offset: 1}}>
+                    <Col>
                         <Form.Group>
                           <Form.Label>Notes</Form.Label>
-                          <Form.Control as="textarea" className="notes" data-id={indx} />
+                          <Form.Control as="textarea" data-type="outer" data-attr="notes" data-actorid={indx} rows={8}/>
                         </Form.Group>
                     </Col>
                   </Row>
@@ -109,8 +171,6 @@ class PlayActor extends Component {
               )
               })
             }
-
-
 
             <Form.Group>
               <Button type="text" onClick={this.addActor}>Add New Actor</Button>
@@ -122,8 +182,6 @@ class PlayActor extends Component {
                 Next
             </Button>
         </Form>
-      </Col>
-    </Row>
     );
   }
 }
