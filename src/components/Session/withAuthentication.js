@@ -39,4 +39,5 @@ const withAuthentication = Component => {
   return withFirebase(WithAuthentication);
 };
 
+
 export default withAuthentication;

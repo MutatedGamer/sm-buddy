@@ -7,7 +7,7 @@ const propTypes = {
   end:          PropTypes.string,
   format:       PropTypes.number,
   initialValue: PropTypes.any,
-  onChange:     PropTypes.func,
+  update:     PropTypes.func,
   start:        PropTypes.string,
   step:         PropTypes.number,
   value:        PropTypes.any,
@@ -17,7 +17,7 @@ function TimePicker({
   end           = '23:59',
   format        = 12,
   initialValue  = '00:00',
-  onChange      = () => {},
+  update      = () => {},
   start         = '00:00',
   step          = 30,
   value         = '32400',
@@ -90,7 +90,7 @@ function TimePicker({
   return (
     <Form.Control
       as = "select"
-      onChange        = {(e) => { onChange(parseInt(e.target.value, 10)); }}
+      onChange        = {(e) => { update(parseInt(e.target.value, 10)); this.props.onChange(e)}}
       {...rest}
     >
       {optionWidgets}

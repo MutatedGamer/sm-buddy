@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AuthUserContext, withAuthorization } from '../Session';
+import { withAuthUser, withAuthorization, withAuthentication } from '../Session';
 import { withFirebase } from '../Firebase';
 import { Container, Row, Col} from 'react-bootstrap';
 import * as ROUTES from '../../constants/routes';
@@ -7,117 +7,331 @@ import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { firestore } from 'firebase';
 import PlayName from './Steps/PlayName';
-import PlayDescription from './Steps/PlayDescription';
 import PlayActor from './Steps/PlayActor';
+import PlayScene from './Steps/PlayScene';
+import ReviewPage from './Steps/Review';
+
+
+// const AddPlayPage = () => (
+//   <AuthUserContext.Consumer>
+//     {authUser => <AddPlayPageAuth  authUser={authUser}/> }
+//   </AuthUserContext.Consumer>
+// );
 
 const INITIAL_STATE = {
     name: '',
     description: '',
     error: '',
-    step: 3,
-    actor: '',
+    step: 1,
+    actors: [{name:"", characters:[""], notes:"", unavailibilities: []}],
+    scenes: [{title:"", characters:[""], notes:"", block:0, table:0}],
 }
-
 class AddPlayPage extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+      super(props);
+      this.state = { ...INITIAL_STATE};
+  }
 
-        this.state = { ...INITIAL_STATE };
-    }
+  nextStep = () => {
+      const { step } = this.state;
+      this.setState({
+          step : step + 1
+      });
+  }
 
-    nextStep = () => {
-        const { step } = this.state;
-        this.setState({
-            step : step + 1
-        });
-    }
+  prevStep = () => {
+      const { step } = this.state;
+      this.setState({
+          step : step - 1
+      });
+  }
 
-    prevStep = () => {
-        const { step } = this.state;
-        this.setState({
-            step : step - 1
-        });
-    }
+  onSubmit = event => {
+    var characterMap = new Map();
+    let characters = new Set();
+    this.state.actors.forEach((actor) => {
+      actor.characters.forEach((character) => {
+        characters.add(character);
+      })
+    });
+    characters = Array.from(characters).sort();
 
-    onSubmit = event => {
-    event.preventDefault();
-        this.props.firebase.db.collection("shows").add({
-            name: this.state.name,
-            description : this.state.description,
-            created: firestore.FieldValue.serverTimestamp(),
+    let db = this.props.firebase.db;
+
+    db.collection("shows").add({
+        name: this.state.name,
+        description : this.state.description,
+        created: firestore.FieldValue.serverTimestamp(),
+        creator: this.props.context.uid,
+    })
+    .then((showDocRef) => {
+      let show = db.collection("shows").doc(showDocRef.id);
+      characters.forEach((character, index) => {
+        show.collection("characters").add({
+          name: character,
         })
-        .then(() => {
-            this.setState({ ...INITIAL_STATE });
-        })
-        .then(() => {
-            this.props.history.push(ROUTES.ADMIN);
-        })
-        .catch(error => {
-            this.setState({ error });
+        .then((charDocRef) => {
+          characterMap.set(character, charDocRef.id);
+          if (characterMap.size == characters.length) {
+
+
+            this.state.actors.forEach((actor, index) => {
+              let actorCharArray = actor.characters.map((character) => {
+                  let id = characterMap.get(character);
+                  return show.collection("characters").doc(id);
+              });
+              show.collection("actors").add({
+                name: actor.name,
+                notes: actor.notes,
+                characters: actorCharArray,
+              })
+              .then((actorDocRef) => {
+                actor.unavailibilities.forEach((unavailability, index) => {
+                  show.collection("actors").doc(actorDocRef.id).collection("recurring unavailibilities").add({
+                    day: unavailability.day,
+                    start: unavailability.start,
+                    end: unavailability.end,
+                  });
+                });
+              })
+            });
+            this.state.scenes.forEach((scene, index) => {
+              let sceneCharArray = scene.characters.map((character) => {
+                  let id = characterMap.get(character);
+                  return show.collection("characters").doc(id);
+              });
+              this.props.firebase.db.collection('shows').doc(showDocRef.id).collection("scenes").add({
+                title: scene.title,
+                notes: scene.notes,
+                blocking: parseInt(scene.block),
+                table: parseInt(scene.table),
+                characters: sceneCharArray,
+              });
+            });
+          }
         });
-    };
+      });
 
-    onChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
-    };
+    })
+    .then(() => {
+        this.props.history.push(ROUTES.ADMIN);
+    })
+    .catch(error => {
+        console.log(error);
+    });
+  };
 
+  onChange = (e) => {
+    e.preventDefault();
+    let collection = e.target.dataset.collection;
+    if (collection != null) {
+      let values = [...this.state[collection]];
+      let elementID = e.target.dataset.elementid;
+      let attr = e.target.dataset.attr;
+      values[elementID][attr] = e.target.value;
+      this.setState((prevState) => ({
+       values
+      }));
+    } else {
+      this.setState({ [e.target.name]: e.target.value })
+    }
+  }
 
-    render() {
-        return (
-            <Container>
-                <Row>
-                    <Col>
-                        {this.getStep()}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        {this.error && <p>{this.error.message}</p>}
-                    </Col>
-                </Row>
-            </Container>
-        );
+  updateCharacter = (e) => {
+    e.preventDefault();
+    let collection = e.target.dataset.collection;
+    let values = [...this.state[collection]];
+    let elementID = e.target.dataset.elementid;
+    let charID = e.target.dataset.charrid;
+
+    values[elementID]["characters"][charID] = e.target.value;
+    this.setState((prevState) => ( {
+      values
+    }));
+    e.stopPropagation();
+  }
+
+  updateUnavailibility = (e) => {
+    e.preventDefault();
+    let collection = e.target.dataset.collection;
+    let values = [...this.state[collection]];
+    let elementID = e.target.dataset.elementid;
+    let timeID = e.target.dataset.timeid;
+
+    let value = e.target.value;
+    let timeattr  = e.target.dataset.timeattr;
+    if (timeattr != "day") {
+      value = parseInt(value);
     }
 
-    getStep() {
-        const {
-            name,
-            description,
-            error, 
-            actor,
-            step,
-        } = this.state;
-        const values = { name, description, actor};
-        switch (step) {
-            case 1:
-                return <PlayName
-                        nextStep = {this.nextStep}
-                        onChange = {this.onChange}
-                        values = {values }
-                        />
-            case 2:
-                return <PlayDescription
-                        nextStep = {this.nextStep}
-                        prevStep = {this.prevStep}
-                        onChange = {this.onChange}
-                        values = {values}
-                        />
-                case 3:
-                return <PlayActor
-                        nextStep = {this.nextStep}
-                        prevStep = {this.prevStep}
-                        onChange = {this.onChange}
-                        values = {values}
-                        />
-                //TODO: submit page
-            default:
-                return null;
+    values[elementID]["unavailibilities"][timeID][timeattr] = value;
+    this.setState((prevState) => ( {
+      values
+    }));
+    e.stopPropagation();
+  }
 
-        }
 
+
+  addActor = (e) => {
+    e.preventDefault();
+    this.setState((prevState) => ({
+      actors: [...prevState.actors, {name:"", characters:[""], notes:"", unavailibilities: []}],
+    }));
+  }
+
+  addScene = (e) => {
+    e.preventDefault();
+    this.setState((prevState) => ({
+      scenes: [...prevState.scenes, {title:"", characters:[""], notes:"", block:0, table:0}],
+    }));
+  }
+
+  addCharacter = (type, i, e) => {
+    e.preventDefault();
+    let values = [...this.state[type]];
+    values[i]["characters"] = [...this.state[type][i]["characters"], ""];
+    this.setState((prevState) => ({
+      values
+    }));
+  }
+
+  deleteItem = (type, i, e) => {
+    e.preventDefault();
+    let values = [...this.state[type]];
+    if (values.length == 1) {
+      return;
+    } else {
+      let newValues = values.slice(0, i).concat(values.slice(i + 1, values.length));
+      if (type == "scenes") {
+        this.setState((prevState) => ({
+            "scenes": newValues
+        }));
+      } else if (type == "actors") {
+        this.setState((prevState) => ({
+            "actors": newValues
+        }));
+      }
     }
+  }
+
+  removeCharacter = (type, i, charIndx, e) => {
+    e.preventDefault();
+    let values = [...this.state[type]];
+    let characters = values[i]["characters"];
+    if (characters.length == 1) {
+      return;
+    } else {
+      let newCharacters = characters.slice(0, charIndx).concat(characters.slice(charIndx+1, characters.length));
+      values[i]["characters"] = newCharacters;
+      this.setState((prevState) => ({
+        values
+      }));
+    }
+  }
+
+  addUnavailibility = (i, e) => {
+    e.preventDefault();
+    let actors = [...this.state.actors];
+    actors[i]["unavailibilities"] = [...this.state.actors[i]["unavailibilities"], {day: "sunday", start:32400, end:32400}];
+    this.setState((prevState) => ({
+      actors
+    }));
+  }
+
+
+
+  removeUnavailbility = (i, dataIndx, e) => {
+    e.preventDefault();
+    let actors = [...this.state.actors];
+    let data = actors[i]["unavailibilities"];
+    let newData = data.slice(0, dataIndx).concat(data.slice(dataIndx+1, data.length));
+    actors[i]["unavailibilities"] = newData;
+    this.setState((prevState) => ({
+      actors
+    }));
+  }
+  render() {
+      return (
+          <Container>
+              <Row>
+                  <Col>
+                      {this.getStep()}
+                  </Col>
+              </Row>
+              <Row>
+                  <Col>
+                      {this.error && <p>{this.error.message}</p>}
+                  </Col>
+              </Row>
+          </Container>
+      );
+  }
+
+  getStep() {
+      const {
+          name,
+          description,
+          error,
+          actors,
+          step,
+          scenes,
+      } = this.state;
+      const values = { name, description, actors, scenes };
+      switch (step) {
+        case 1:
+          return <PlayName
+                  nextStep = {this.nextStep}
+                  onChange = {this.onChange}
+                  values = {values }
+                  />
+        case 2:
+          return <PlayActor
+                  nextStep = {this.nextStep}
+                  prevStep = {this.prevStep}
+                  onChange = {this.onChange}
+                  addActor = {this.addActor}
+                  addCharacter = {this.addCharacter}
+                  removeCharacter = {this.removeCharacter}
+                  updateCharacter = {this.updateCharacter}
+                  addUnavailibility = {this.addUnavailibility}
+                  removeUnavailbility = {this.removeUnavailbility}
+                  updateUnavailibility = {this.updateUnavailibility}
+                  deleteItem= {this.deleteItem}
+                  values = {values}
+                  />
+        case 3:
+          return <PlayScene
+                  nextStep = {this.nextStep}
+                  prevStep = {this.prevStep}
+                  onChange = {this.onChange}
+                  addScene= {this.addScene}
+                  addCharacter = {this.addCharacter}
+                  removeCharacter = {this.removeCharacter}
+                  updateCharacter = {this.updateCharacter}
+                  addUnavailibility = {this.addUnavailibility}
+                  removeUnavailbility = {this.removeUnavailbility}
+                  updateUnavailibility = {this.updateUnavailibility}
+                  deleteItem= {this.deleteItem}
+                  values = {values}
+                  />
+          case 4:
+            return <ReviewPage
+              nextStep = {this.nextStep}
+              prevStep = {this.prevStep}
+              values = {values}
+              onChange = {this.onChange}
+              onSubmit = {this.onSubmit}
+              />
+            //TODO: submit page
+        default:
+            return null;
+
+      }
+
+  }
 }
 
 const condition = authUser => !!authUser;
 
-export default withFirebase(withRouter(withAuthorization(condition)(AddPlayPage)));
+export default withAuthUser(withFirebase(withRouter(withAuthorization(condition)(AddPlayPage))));

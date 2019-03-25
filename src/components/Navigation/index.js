@@ -42,8 +42,8 @@ const NavigationAuth = () => (
           </LinkContainer>
         </Nav.Item>
         <Nav.Item>
-          <LinkContainer to={ROUTES.ADMIN}>
-            <Nav.Link>Admin</Nav.Link>
+          <LinkContainer to={ROUTES.PLAYS}>
+            <Nav.Link>My Plays</Nav.Link>
           </LinkContainer>
         </Nav.Item>
       </Nav>

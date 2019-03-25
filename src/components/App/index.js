@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
-  Route,
+  Route, withRouter
 } from 'react-router-dom';
 
 import Navigation from '../Navigation';
@@ -12,7 +12,10 @@ import PasswordForgetPage from '../PasswordForget';
 import HomePage from '../Home';
 import AccountPage from '../Account';
 import AdminPage from '../Admin';
+import PlaysPage from '../Plays';
+import PlayPage from '../Play';
 import AddPlayPage from '../AddPlay';
+import AddConflictPage from '../AddConflict';
 import { Container, Row, Col} from 'react-bootstrap';
 
 import * as ROUTES from '../../constants/routes';
@@ -34,7 +37,9 @@ const App = () => (
             />
             <Route path={ROUTES.HOME} component={HomePage} />
             <Route path={ROUTES.ACCOUNT} component={AccountPage} />
-            <Route path={ROUTES.ADMIN} component={AdminPage} />
+            <Route path={ROUTES.PLAYS} component={PlaysPage} />
+            <Route path={ROUTES.PLAY} component={PlayPage} />
+            <Route path={ROUTES.ADD_CONFLICT} component={AddConflictPage} />
             <Route path={ROUTES.ADD_PLAY} component={AddPlayPage} />
           </Col>
         </Row>

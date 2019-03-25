@@ -6,61 +6,6 @@ import { Header } from 'semantic-ui-react';
 
 
 class PlayActor extends Component {
-  state = {
-    actors: [{name:"", characters:[""], notes:""},],
-  }
-
-  addActor = (e) => {
-    e.preventDefault();
-    this.setState((prevState) => ({
-      actors: [...prevState.actors, {name:"", characters:[""], notes:""}],
-    }));
-  }
-
-  addCharacter = (i, e) => {
-    let actors = [...this.state.actors];
-    console.log(actors[i]);
-    actors[i]["characters"] = [...this.state.actors[i]["characters"], ""];
-    console.log(actors[i]);
-    this.setState((prevState) => ({
-      actors
-    }));
-  }
-
-  removeCharacter = (i, charIndx, e) => {
-    let actors = [...this.state.actors];
-    let characters = actors[i]["characters"];
-    console.log(characters);
-    if (characters.length == 1) {
-      return;
-    } else {
-      let newCharacters = characters.slice(0, charIndx).concat(characters.slice(charIndx+1, characters.length));
-      actors[i]["characters"] = newCharacters;
-      this.setState((prevState) => ({
-        actors
-      }));
-    }
-  }
-
-  handleChange = (e) => {
-    console.log(e.target.value);
-    let actors = [...this.state.actors];
-    if (e.target.dataset.type == "outer") {
-      actors[e.target.dataset.actorid][e.target.dataset.attr] = e.target.value;
-      this.setState((prevState) => ({
-        actors
-      }));
-    } else if (e.target.dataset.type == "inner") {
-      console.log('here');
-      actors[e.target.dataset.actorid][e.target.dataset.attr][e.target.dataset.attrid] = e.target.value;
-      this.setState((prevState) => ({
-        actors
-      }));
-    } else {
-      this.setState({ [e.target.name]: e.target.value })
-    }
-  }
-
   saveAndContinue = (e) => {
     e.preventDefault();
     this.props.nextStep();
@@ -73,115 +18,173 @@ class PlayActor extends Component {
 
   render() {
     const { values } = this.props;
-    const isInvalid =
-        values.name === '';
-    let {actors} = this.state;
+    let isInvalid = false;
+    let actors = values.actors;
     return (
-        <Form onChange={this.handleChange}>
-          <Header as="h1">Actor</Header>
+      <div>
+        <Header as="h1">Actors</Header>
+        <Form onChange={this.props.onChange}>
 
             { actors.map((val, indx) => {
+              isInvalid = isInvalid || val.name=="";
               return (
-                <Container key={indx}>
-                  <Row>
+                <div key={indx}>
+                  <Form.Row>
                     <Col>
-                        <Form.Group>
-                          <Form.Label>Name</Form.Label>
-                          <Form.Control type="text" data-type="outer" data-attr="name" data-actorid={indx} />
-                        </Form.Group>
-                        <Form.Group>
-                          <Form.Label>Characters</Form.Label>
-                            { actors[indx]["characters"].map((val, charIndx) => {
-                                const last = charIndx == actors[indx]["characters"].length - 1;
-                                return (
-                                  <div key={charIndx}>
-                                    {last ? (
-                                      <InputGroup className="mb-3">
-                                        <InputGroup.Prepend>
-                                          <Button variant="danger" onClick={this.removeCharacter.bind(this, indx, charIndx)}>-</Button>
-                                        </InputGroup.Prepend>
-                                        <Form.Control
-                                          type="text"
-                                          data-type="inner"
-                                          data-attr="characters"
-                                          data-actorid={indx}
-                                          data-attrid={charIndx}
-                                          aria-describedby="basic-addon2"
-                                          value={val}
-                                          onChange={()=>{}}
-                                        />
-                                        <InputGroup.Append>
-                                          <Button variant="success" onClick={this.addCharacter.bind(this, indx)}>Add Character</Button>
-                                        </InputGroup.Append>
-                                      </InputGroup>
-                                    ) : (
-                                      <InputGroup className="mb-3">
-                                        <InputGroup.Prepend>
-                                          <Button variant="danger" onClick={this.removeCharacter.bind(this, indx, charIndx)}>-</Button>
-                                        </InputGroup.Prepend>
-                                        <Form.Control
-                                          type="text"
-                                          data-type="inner"
-                                          data-attr="characters"
-                                          data-actorid={indx}
-                                          data-attrid={charIndx}
-                                          aria-describedby="basic-addon2"
-                                          value={val}
-                                          onChange={()=>{}}
-                                        />
-                                      </InputGroup>
-                                    )}
-                                  </div>
-                                );
-                              })
-                            }
-                        </Form.Group>
-                        <Form.Group controlId="exampleForm.ControlSelect1">
-                          <Form.Label>Unavailibilities</Form.Label>
-                            <Form.Row>
+                      <Form.Group>
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control
+                          isInvalid={val.name == ""}
+                          type="text"
+                          data-collection="actors"
+                          data-attr="name"
+                          data-elementid={indx}
+                          value={val.name}
+                          onChange = {() => {}}
+                          />
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label>Characters</Form.Label>
+                          { actors[indx]["characters"].map((val, charIndx) => {
+                            isInvalid = isInvalid || val == "";
+                              return (
+                                <div key={charIndx}>
+                                  <InputGroup className="mb-3">
+                                    <InputGroup.Prepend>
+                                      <Button variant="danger" onClick={this.props.removeCharacter.bind(this, "actors", indx, charIndx)}>-</Button>
+                                    </InputGroup.Prepend>
+                                    <Form.Control
+                                      isInvalid={val==""}
+                                      type="text"
+                                      data-collection="actors"
+                                      data-elementid={indx}
+                                      data-charrid={charIndx}
+                                      aria-describedby="basic-addon2"
+                                      value={val}
+                                      onChange={this.props.updateCharacter}
+                                    />
+                                  </InputGroup>
+                                </div>
+                              );
+                            })
+                          }
+                      </Form.Group>
+                      <Form.Group>
+                        <Button variant="success" onClick={this.props.addCharacter.bind(this, "actors", indx)}>Add Character</Button>
+                      </Form.Group>
+                      <Form.Group controlId="exampleForm.ControlSelect1">
+                        <Form.Label>Unavailibilities</Form.Label>
+                        { actors[indx]["unavailibilities"].map((data, dataIndx) => {
+                          let day = data["day"];
+                          let start = data["start"];
+                          let end = data["end"];
+                          console.log(start);
+                          console.log(end);
+                          isInvalid = isInvalid || end <= start;
+                          return (
+                            <Form.Row key={dataIndx}>
+                              <Form.Group as={Col} xs={1}>
+                                <Button variant="danger" onClick={this.props.removeUnavailbility.bind(this, indx, dataIndx)}>-</Button>
+                              </Form.Group>
                               <Form.Group as={Col}>
-                                <Form.Control as="select">
-                                  <option value="sunday">Sunday</option>
-                                  <option value="monday">Monday</option>
-                                  <option value="tuesday">Tuesday</option>
-                                  <option value="wednesday">Wednesday</option>
-                                  <option value="thursday">Thursday</option>
-                                  <option value="friday">Friday</option>
-                                  <option value="saturday">Saturday</option>
+                                <Form.Control
+                                  as="select"
+                                  data-collection="actors"
+                                  data-elementid={indx}
+                                  data-timeid={dataIndx}
+                                  data-timeattr="day"
+                                  value={day}
+                                  onChange={this.props.updateUnavailibility}
+                                  >
+                                  <option value="Sunday">Sunday</option>
+                                  <option value="Monday">Monday</option>
+                                  <option value="Tuesday">Tuesday</option>
+                                  <option value="Wednesday">Wednesday</option>
+                                  <option value="Thursday">Thursday</option>
+                                  <option value="Friday">Friday</option>
+                                  <option value="Saturday">Saturday</option>
                                 </Form.Control>
                               </Form.Group>
                               <Form.Group as={Col}>
-                                  <TimePicker   start="9:00" end="22:00" step={15} />
+                                  <TimePicker
+                                    start="9:00"
+                                    end="22:00"
+                                    step={15}
+                                    data-collection="actors"
+                                    data-elementid={indx}
+                                    data-timeid={dataIndx}
+                                    data-timeattr="start"
+                                    defaultValue={String(start)}
+                                    onChange={this.props.updateUnavailibility}
+                                   />
                               </Form.Group>
                               <Form.Group as={Col}>
-                                  <TimePicker   start="9:00" end="22:00" step={15} />
+                                <TimePicker
+                                    start="9:00"
+                                    end="22:00"
+                                    step={15}
+                                    isInvalid={end <= start}
+                                    data-collection="actors"
+                                    data-elementid={indx}
+                                    data-timeid={dataIndx}
+                                    data-timeattr="end"
+                                    defaultValue={String(end)}
+                                    onChange={this.props.updateUnavailibility}
+                                   />
                               </Form.Group>
                             </Form.Row>
+                          );
+                        })
+                      }
+                      <Form.Row>
+                        <Form.Group as={Col}>
+                          <Button variant="success" onClick={this.props.addUnavailibility.bind(this, indx)}>Add</Button>
                         </Form.Group>
+                      </Form.Row>
+                      <Form.Group>
+                        <Button variant="danger" disabled={actors.length==1} onClick={this.props.deleteItem.bind(this, "actors", indx)}>Delete Actor</Button>
+                      </Form.Group>
+                      </Form.Group>
                     </Col>
                     <Col>
-                        <Form.Group>
-                          <Form.Label>Notes</Form.Label>
-                          <Form.Control as="textarea" data-type="outer" data-attr="notes" data-actorid={indx} rows={8}/>
-                        </Form.Group>
+                      <Form.Group>
+                        <Form.Label>Notes</Form.Label>
+                        <Form.Control
+                          as="textarea"
+                          data-collection="actors"
+                          data-attr="notes"
+                          data-elementid={indx}
+                          value = {val.notes}
+                          onChange = {() => {}}
+                          rows={12}
+                        />
+                      </Form.Group>
                     </Col>
-                  </Row>
+                  </Form.Row>
                   <hr />
-                </Container>
+                </div>
               )
               })
             }
-
-            <Form.Group>
-              <Button type="text" onClick={this.addActor}>Add New Actor</Button>
-            </Form.Group>
-            <Button onClick={this.back} disabled={isInvalid} variant="light" type="submit">
-                Back
-            </Button>
-            <Button onClick={this.saveAndContinue} disabled={isInvalid} variant="light" type="submit">
-                Next
-            </Button>
+            <Form.Row>
+              <Col>
+                <Form.Group>
+                  <Button type="text" onClick={this.props.addActor}>Add New Actor</Button>
+                </Form.Group>
+              </Col>
+              <Col className="text-right">
+                <Form.Group>
+                  <Button onClick={this.back} variant="light" type="submit">
+                    Back
+                  </Button>
+                  <Button onClick={this.saveAndContinue} disabled={isInvalid} variant="light" type="submit">
+                      Next
+                  </Button>
+                </Form.Group>
+              </Col>
+            </Form.Row>
         </Form>
+      </div>
     );
   }
 }
