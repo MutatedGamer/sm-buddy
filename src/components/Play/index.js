@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
-import { withRouter, Link } from 'react-router-dom';
-import { withAuthUser, withAuthorization, withAuthentication } from '../Session';
-import { withFirebase } from '../Firebase';
-import { Container, Row, Col } from 'react-bootstrap';
+import { withRouter } from 'react-router-dom';
+import { withAuthUser, withAuthorization } from '../Session';
+import { Row, Col } from 'react-bootstrap';
 import { Tab } from 'semantic-ui-react';
 import InfoPage from './Tabs/Info';
+import SchedulePage from './Tabs/Schedule';
 
 class PlayPage extends Component {
   constructor(props) {
@@ -31,17 +31,12 @@ class PlayPage extends Component {
             created,
             actors: [],
         };
-        this.show.collection("actors").get().then(snapshot => {
-          snapshot.forEach(doc => {
-            play.actors.push(doc.data().name);
-          });
-        }).then( () => {
-          this.setState({
-            play,
-            playId,
-            loading: false,
-        });
-        });
+
+        this.setState({
+          play,
+          playId,
+          loading: false,
+      });
     });
   }
 
@@ -52,11 +47,10 @@ class PlayPage extends Component {
 
   render() {
     const { plays, loading } = this.state;
-    console.log('here');
 
     var panes = [
       { menuItem: 'Info', render: () => <Tab.Pane attached={false}><InfoPage values={this.state}/></Tab.Pane>},
-      { menuItem: 'Tab 2', render: () => <Tab.Pane attached={false}>Tab 2 Content</Tab.Pane> },
+      { menuItem: 'Schedule', render: () => <Tab.Pane attached={false}><SchedulePage {... this.props} values={this.state} /></Tab.Pane> },
       { menuItem: 'Tab 3', render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane> },
     ];
 
@@ -64,7 +58,7 @@ class PlayPage extends Component {
         <Row>
           <Col>
             <h1>{this.state.play.name} Management Page</h1>
-            <Tab menu={{ secondary: true, pointing: true}} panes={panes} />
+            <Tab activeIndex={1} menu={{ secondary: true, pointing: true}} panes={panes} />
         </Col>
       </Row>
     );

@@ -32,7 +32,6 @@ class PlaysPage extends Component {
     let playId = this.props.match.params.playId;
     this.show = this.props.firebase.db.collection("shows").doc(playId);
     this.unsubscribe = this.show.onSnapshot(snapshot => {
-        const plays = [];
         const { name, description, created } = snapshot.data();
         let play = {
             name,

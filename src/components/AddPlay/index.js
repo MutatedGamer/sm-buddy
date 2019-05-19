@@ -20,10 +20,11 @@ import ReviewPage from './Steps/Review';
 
 const INITIAL_STATE = {
     name: '',
+    email: '',
     description: '',
     error: '',
     step: 1,
-    actors: [{name:"", characters:[""], notes:"", unavailibilities: []}],
+    actors: [{name:"", email:"", characters:[""], notes:"", unavailibilities: []}],
     scenes: [{title:"", characters:[""], notes:"", block:0, table:0}],
 }
 class AddPlayPage extends Component {
@@ -60,6 +61,7 @@ class AddPlayPage extends Component {
 
     db.collection("shows").add({
         name: this.state.name,
+        email: this.state.email,
         description : this.state.description,
         created: firestore.FieldValue.serverTimestamp(),
         creator: this.props.context.uid,
@@ -83,6 +85,7 @@ class AddPlayPage extends Component {
               show.collection("actors").add({
                 name: actor.name,
                 notes: actor.notes,
+                email: actor.email,
                 characters: actorCharArray,
               })
               .then((actorDocRef) => {
@@ -106,6 +109,8 @@ class AddPlayPage extends Component {
                 blocking: parseInt(scene.block),
                 table: parseInt(scene.table),
                 characters: sceneCharArray,
+                blocked: false,
+                tabled: false,
               });
             });
           }
@@ -114,7 +119,7 @@ class AddPlayPage extends Component {
 
     })
     .then(() => {
-        this.props.history.push(ROUTES.ADMIN);
+        this.props.history.push(ROUTES.PLAYS);
     })
     .catch(error => {
         console.log(error);
@@ -176,7 +181,7 @@ class AddPlayPage extends Component {
   addActor = (e) => {
     e.preventDefault();
     this.setState((prevState) => ({
-      actors: [...prevState.actors, {name:"", characters:[""], notes:"", unavailibilities: []}],
+      actors: [...prevState.actors, {name:"", email:"", characters:[""], notes:"", unavailibilities: []}],
     }));
   }
 

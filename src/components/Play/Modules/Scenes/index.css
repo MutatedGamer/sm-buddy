@@ -1,0 +1,9 @@
+.scene {
+  border-radius: 8px;
+  border: 1px solid gray;
+  cursor: pointer;
+}
+
+.selected {
+  box-shadow: 0 0 5px rgba(81, 203, 238, 1);
+}

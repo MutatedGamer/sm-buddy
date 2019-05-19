@@ -12,7 +12,7 @@ class PlayName extends Component {
   render() {
     const { values } = this.props;
     const isInvalid =
-        values.name === '';
+        values.name === '' || values.email == "";
     return (
       <div>
         <Header as="h2">{values.error}</Header>
@@ -22,7 +22,11 @@ class PlayName extends Component {
              <Col>
                 <Form.Group controlId="playName">
                     <Form.Label>Play Name</Form.Label>
-                    <Form.Control isInvalid={isInvalid} name="name" onChange={this.props.onChange} type="text" defaultValue={values.name}></Form.Control>
+                    <Form.Control isInvalid={values.name==""} name="name" onChange={this.props.onChange} type="text" defaultValue={values.name}></Form.Control>
+                </Form.Group>
+                <Form.Group controlId="playName">
+                    <Form.Label>SM Mailing List (for SM, Producer, etc))</Form.Label>
+                    <Form.Control isInvalid={values.email==""} name="email" onChange={this.props.onChange} type="email" defaultValue={values.email}></Form.Control>
                 </Form.Group>
                 <Form.Group controlId="playName">
                     <Form.Label>Description</Form.Label>

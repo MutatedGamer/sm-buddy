@@ -26,7 +26,7 @@ class PlayActor extends Component {
         <Form onChange={this.props.onChange}>
 
             { actors.map((val, indx) => {
-              isInvalid = isInvalid || val.name=="";
+              isInvalid = isInvalid || val.name=="" || val.email=="";
               return (
                 <div key={indx}>
                   <Form.Row>
@@ -40,6 +40,18 @@ class PlayActor extends Component {
                           data-attr="name"
                           data-elementid={indx}
                           value={val.name}
+                          onChange = {() => {}}
+                          />
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
+                          isInvalid={val.email== ""}
+                          type="email"
+                          data-collection="actors"
+                          data-attr="email"
+                          data-elementid={indx}
+                          value={val.email}
                           onChange = {() => {}}
                           />
                       </Form.Group>

@@ -5,6 +5,7 @@ import { withAuthUser, withAuthorization, withAuthentication } from '../Session'
 import { withFirebase } from '../Firebase';
 import { Container, Row, Col } from 'react-bootstrap';
 import { Card } from 'semantic-ui-react';
+import FAB from '../FAB';
 
 class PlaysPage extends Component {
   constructor(props) {
@@ -45,6 +46,11 @@ class PlaysPage extends Component {
 
   render() {
     const { plays, loading } = this.state;
+    const fabStyle = {
+      position: 'fixed',
+      bottom: 15,
+      right: 15,
+    }
 
     return (
         <Row>
@@ -52,6 +58,9 @@ class PlaysPage extends Component {
             <h1>Admin</h1>
             {loading && <div>Loading ...</div>}
             <PlayList plays={plays} />
+            <div className="fabContainer" style={fabStyle}>
+                <FAB />
+            </div>
         </Col>
       </Row>
     );
