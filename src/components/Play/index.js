@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import { withRouter } from 'react-router-dom';
 import { withAuthUser, withAuthorization } from '../Session';
+import { withFirebase } from '../Firebase';
 import { Row, Col } from 'react-bootstrap';
 import { Tab } from 'semantic-ui-react';
 import InfoPage from './Tabs/Info';
@@ -46,7 +47,6 @@ class PlayPage extends Component {
 
 
   render() {
-    const { plays, loading } = this.state;
 
     var panes = [
       { menuItem: 'Info', render: () => <Tab.Pane attached={false}><InfoPage values={this.state}/></Tab.Pane>},
@@ -68,4 +68,4 @@ class PlayPage extends Component {
 
 const condition = authUser => !!authUser;
 
-export default withRouter(withAuthUser(withAuthorization(condition)(PlayPage)));
+export default withFirebase(withRouter(withAuthUser(withAuthorization(condition)(PlayPage))));

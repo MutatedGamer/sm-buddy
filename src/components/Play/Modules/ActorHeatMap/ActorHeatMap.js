@@ -1,25 +1,12 @@
 
 import React, { Component } from 'react';
-import { Button, Col, Row, Container, Form } from 'react-bootstrap';
+import {  Col, Form } from 'react-bootstrap';
 import HeatMap from 'react-heatmap-grid';
 import { timeIntegerToString, findClosest } from '../../../../Helpers/helpers.js';
 import DatePicker from "react-datepicker";
 import TimePicker from '../../../TimePicker';
 import "react-datepicker/dist/react-datepicker.css";
 var moment = require('moment');
-
-function conflicts(conflict, start, end, date) {
-  if (!moment(conflict.date).isSame(moment(date), 'date')) {
-    return false;
-  }
-  if (conflict.start < end && conflict.start >= start) {
-    return true;
-  }
-  if (conflict.end <= end && conflict.end > start) {
-    return true;
-  }
-  return false;
-}
 
 class ActorHeatMap extends Component {
   constructor(props) {
@@ -51,14 +38,14 @@ class ActorHeatMap extends Component {
   updateTime = (e) => {
     let type = e.target.dataset.name;
     let time = parseInt(e.target.value);
-    if (type == 'start') {
+    if (type === 'start') {
       if (time >= this.state.endTime) {
         this.setState({startTime: time, endTime: time})
       } else {
         this.setState({ startTime: time });
       }
     }
-    if (type == 'end') {
+    if (type === 'end') {
       if (time <= this.state.startTime) {
         this.setState({startTime: time, endTime: time});
       } else {
@@ -124,12 +111,12 @@ class ActorHeatMap extends Component {
           // Get xLabel indexes
           const jIndices = [];
           for (var i = 0; i < days.length; i++) {
-            if (conflict.type == "regular") {
-              if (days[i].format('LL') == moment(conflict.date).format('LL')) {
+            if (conflict.type === "regular") {
+              if (days[i].format('LL') === moment(conflict.date).format('LL')) {
                 jIndices.push(i);
               }
-            } else if (conflict.type == "recurring") {
-              if (days[i].format('dddd').toLowerCase() == conflict.date) {
+            } else if (conflict.type === "recurring") {
+              if (days[i].format('dddd').toLowerCase() === conflict.date) {
                 jIndices.push(i);
               }
             }
@@ -137,8 +124,8 @@ class ActorHeatMap extends Component {
           //const j = days.indexOf(moment(conflict.date).format('LL'));
 
           const yStart = times.indexOf(findClosest(conflict.start, times));
-          var i = yStart;
-          if (jIndices.length == 0 || i==-1) {
+          i = yStart;
+          if (jIndices.length === 0 || i === -1) {
             return;
           }
 
@@ -149,7 +136,7 @@ class ActorHeatMap extends Component {
                 accountedForConflicts.get(actor).add(JSON.stringify([i, j]));
               }
               i++;
-              if (i==yLabels.length) {
+              if (i === yLabels.length) {
                 break;
               }
             }
@@ -158,7 +145,6 @@ class ActorHeatMap extends Component {
         });
       };
     });
-
 
 
     return (
@@ -229,11 +215,13 @@ class ActorHeatMap extends Component {
           yLabelWidth={65}
           yLabels = {yLabels}
           data = {data}
-          height = {25}
           width={10}
           xLabelsLocation={"top"}
           cellStyle={(background, value, min, max, data, x, y) => ({
             background: `rgb(40, 167, 59, ${1 - (max - value) / (max)})`,
+            // margin: `${Math.abs(y%2 - 2)}px 0px ${1 - y%2}px 0px`,
+            margin: `0px 0px 0x 0px`,
+            border: `1px solid white`,
           })}
           title={(value, unit) => `${value}/${actors.size}`}
         />

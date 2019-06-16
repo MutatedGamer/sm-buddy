@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { Button, Col, Row, Container, Form } from 'react-bootstrap';
-import InputGroup from 'react-bootstrap/InputGroup';
-import TimePicker from '../../TimePicker';
 import { Header, List } from 'semantic-ui-react';
 import { timeIntegerToString } from '../../../Helpers/helpers.js';
 

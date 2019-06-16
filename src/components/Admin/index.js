@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 
-import { AuthUserContext, withAuthorization } from '../Session';
-import { withFirebase } from '../Firebase';
-import { Container, Row, Col } from 'react-bootstrap';
+import { withAuthorization } from '../Session';
+import { Row, Col } from 'react-bootstrap';
 import { Card } from 'semantic-ui-react';
 import FAB from '../FAB';
 

@@ -10,6 +10,7 @@ const withAuthentication = Component => {
 
       this.state = {
         authUser: null,
+        gapi: null,
       };
     }
 
@@ -19,9 +20,14 @@ const withAuthentication = Component => {
           authUser
             ? this.setState({ authUser })
             : this.setState({ authUser: null });
+            require( 'google-client-api' )().then( function( gapi ) {
+              this.setState({gapi});
+          });
         },
       );
     }
+
+
 
     componentWillUnmount() {
       this.listener();

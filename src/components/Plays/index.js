@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 
 import { Link } from 'react-router-dom';
-import { withAuthUser, withAuthorization, withAuthentication } from '../Session';
+import { withAuthUser, withAuthorization } from '../Session';
 import { withFirebase } from '../Firebase';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Row, Col } from 'react-bootstrap';
 import { Card } from 'semantic-ui-react';
 import FAB from '../FAB';
+
 
 class PlaysPage extends Component {
   constructor(props) {
@@ -37,6 +38,28 @@ class PlaysPage extends Component {
             loading: false,
         });
     });
+    this.getEvents();
+  }
+
+  getEvents() {
+    console.log("getting events");
+    if (!this.props.firebase.gapi) {
+      console.log("NO GAPI");
+      return;
+    }
+    this.props.firebase.gapi.client.load('calendar', 'v3').then(() => {
+      console.log("calendar loaded");
+      this.props.firebase.gapi.client.calendar.events.list({
+        calendarId: 'primary',
+        timeMin: new Date().toISOString(),
+        showDeleted: false,
+        singleEvents: true,
+        maxResults: 10,
+        orderBy: 'startTime'
+      }).then(events => {
+        console.log(events.result.items);
+      }); 
+    });
   }
 
   componentWillUnmount() {
@@ -67,6 +90,7 @@ class PlaysPage extends Component {
   }
 }
 
+
 const PlayList = ({ plays }) => (
     <div className="d-flex flex-wrap justify-content-start">
         {plays.map(play => {
@@ -89,4 +113,4 @@ const PlayList = ({ plays }) => (
 
 const condition = authUser => !!authUser;
 
-export default withAuthUser(withAuthorization(condition)(PlaysPage));
+export default withFirebase(withAuthUser(withAuthorization(condition)(PlaysPage)));

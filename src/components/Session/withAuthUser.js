@@ -1,7 +1,6 @@
 
 import React from 'react';
 import AuthUserContext from './context';
-import { withFirebase } from '../Firebase';
 
 const withAuthUser = Component => {
   return (props) => (

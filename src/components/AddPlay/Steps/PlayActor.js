@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Col, Row, Container, Form } from 'react-bootstrap';
+import { Button, Col, Form } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/InputGroup';
 import TimePicker from '../../TimePicker';
 import { Header } from 'semantic-ui-react';
@@ -26,7 +26,7 @@ class PlayActor extends Component {
         <Form onChange={this.props.onChange}>
 
             { actors.map((val, indx) => {
-              isInvalid = isInvalid || val.name=="" || val.email=="";
+              isInvalid = isInvalid || val.name === "" || val.email === "";
               return (
                 <div key={indx}>
                   <Form.Row>
@@ -34,7 +34,7 @@ class PlayActor extends Component {
                       <Form.Group>
                         <Form.Label>Name</Form.Label>
                         <Form.Control
-                          isInvalid={val.name == ""}
+                          isInvalid={val.name === ""}
                           type="text"
                           data-collection="actors"
                           data-attr="name"
@@ -46,7 +46,7 @@ class PlayActor extends Component {
                       <Form.Group>
                         <Form.Label>Email</Form.Label>
                         <Form.Control
-                          isInvalid={val.email== ""}
+                          isInvalid={val.email === ""}
                           type="email"
                           data-collection="actors"
                           data-attr="email"
@@ -58,7 +58,7 @@ class PlayActor extends Component {
                       <Form.Group>
                         <Form.Label>Characters</Form.Label>
                           { actors[indx]["characters"].map((val, charIndx) => {
-                            isInvalid = isInvalid || val == "";
+                            isInvalid = isInvalid || val === "";
                               return (
                                 <div key={charIndx}>
                                   <InputGroup className="mb-3">
@@ -66,7 +66,7 @@ class PlayActor extends Component {
                                       <Button variant="danger" onClick={this.props.removeCharacter.bind(this, "actors", indx, charIndx)}>-</Button>
                                     </InputGroup.Prepend>
                                     <Form.Control
-                                      isInvalid={val==""}
+                                      isInvalid={val === ""}
                                       type="text"
                                       data-collection="actors"
                                       data-elementid={indx}
@@ -154,7 +154,7 @@ class PlayActor extends Component {
                         </Form.Group>
                       </Form.Row>
                       <Form.Group>
-                        <Button variant="danger" disabled={actors.length==1} onClick={this.props.deleteItem.bind(this, "actors", indx)}>Delete Actor</Button>
+                        <Button variant="danger" disabled={actors.length === 1} onClick={this.props.deleteItem.bind(this, "actors", indx)}>Delete Actor</Button>
                       </Form.Group>
                       </Form.Group>
                     </Col>

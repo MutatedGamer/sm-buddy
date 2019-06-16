@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Col, Row, Container, Form } from 'react-bootstrap';
 
 class InfoPage extends Component {
   render() {

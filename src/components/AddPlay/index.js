@@ -1,31 +1,24 @@
 import React, { Component } from 'react';
-import { withAuthUser, withAuthorization, withAuthentication } from '../Session';
+import { withAuthUser, withAuthorization } from '../Session';
 import { withFirebase } from '../Firebase';
 import { Container, Row, Col} from 'react-bootstrap';
 import * as ROUTES from '../../constants/routes';
-import { Link, withRouter } from 'react-router-dom';
-import { compose } from 'recompose';
+import { withRouter } from 'react-router-dom';
 import { firestore } from 'firebase';
 import PlayName from './Steps/PlayName';
 import PlayActor from './Steps/PlayActor';
 import PlayScene from './Steps/PlayScene';
 import ReviewPage from './Steps/Review';
 
-
-// const AddPlayPage = () => (
-//   <AuthUserContext.Consumer>
-//     {authUser => <AddPlayPageAuth  authUser={authUser}/> }
-//   </AuthUserContext.Consumer>
-// );
-
 const INITIAL_STATE = {
     name: '',
-    email: '',
+    email: "",
     description: '',
     error: '',
     step: 1,
     actors: [{name:"", email:"", characters:[""], notes:"", unavailibilities: []}],
     scenes: [{title:"", characters:[""], notes:"", block:0, table:0}],
+    calendar: "",
 }
 class AddPlayPage extends Component {
   constructor(props) {
@@ -65,6 +58,7 @@ class AddPlayPage extends Component {
         description : this.state.description,
         created: firestore.FieldValue.serverTimestamp(),
         creator: this.props.context.uid,
+        calendar: this.state.calendar,
     })
     .then((showDocRef) => {
       let show = db.collection("shows").doc(showDocRef.id);
@@ -74,7 +68,7 @@ class AddPlayPage extends Component {
         })
         .then((charDocRef) => {
           characterMap.set(character, charDocRef.id);
-          if (characterMap.size == characters.length) {
+          if (characterMap.size === characters.length) {
 
 
             this.state.actors.forEach((actor, index) => {
@@ -142,6 +136,11 @@ class AddPlayPage extends Component {
     }
   }
 
+  setCalendarId = (id) => {
+    console.log("Setting calendar ID to " + id);
+    this.setState({calendar: id});
+  }
+
   updateCharacter = (e) => {
     e.preventDefault();
     let collection = e.target.dataset.collection;
@@ -165,7 +164,7 @@ class AddPlayPage extends Component {
 
     let value = e.target.value;
     let timeattr  = e.target.dataset.timeattr;
-    if (timeattr != "day") {
+    if (timeattr !== "day") {
       value = parseInt(value);
     }
 
@@ -204,15 +203,15 @@ class AddPlayPage extends Component {
   deleteItem = (type, i, e) => {
     e.preventDefault();
     let values = [...this.state[type]];
-    if (values.length == 1) {
+    if (values.length === 1) {
       return;
     } else {
       let newValues = values.slice(0, i).concat(values.slice(i + 1, values.length));
-      if (type == "scenes") {
+      if (type === "scenes") {
         this.setState((prevState) => ({
             "scenes": newValues
         }));
-      } else if (type == "actors") {
+      } else if (type === "actors") {
         this.setState((prevState) => ({
             "actors": newValues
         }));
@@ -224,7 +223,7 @@ class AddPlayPage extends Component {
     e.preventDefault();
     let values = [...this.state[type]];
     let characters = values[i]["characters"];
-    if (characters.length == 1) {
+    if (characters.length === 1) {
       return;
     } else {
       let newCharacters = characters.slice(0, charIndx).concat(characters.slice(charIndx+1, characters.length));
@@ -277,17 +276,20 @@ class AddPlayPage extends Component {
       const {
           name,
           description,
-          error,
           actors,
           step,
           scenes,
+          calendar,
+          email,
       } = this.state;
-      const values = { name, description, actors, scenes };
+      const values = { name, description, actors, scenes, calendar, email};
       switch (step) {
         case 1:
           return <PlayName
+                  { ... this.props}
                   nextStep = {this.nextStep}
                   onChange = {this.onChange}
+                  setCalendarId = {this.setCalendarId}
                   values = {values }
                   />
         case 2:

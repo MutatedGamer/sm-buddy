@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as ROUTES from '../../constants/routes';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import {FloatingMenu, MainButton, ChildButton} from 'react-floating-button-menu';
 import MdAdd from '@material-ui/icons/Add';
 import MdClose from '@material-ui/icons/Clear';

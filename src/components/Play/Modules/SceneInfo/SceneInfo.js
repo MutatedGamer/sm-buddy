@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Card, Form, Col, Row } from 'react-bootstrap';
-import { timeIntegerToString, findClosest } from '../../../../Helpers/helpers.js';
+import { Col, Row } from 'react-bootstrap';
+import { timeIntegerToString } from '../../../../Helpers/helpers.js';
 var moment = require('moment');
 
 class SceneInfo extends Component {
@@ -10,13 +10,13 @@ class SceneInfo extends Component {
     for (let actor of scene.actorConflicts.keys()) {
       let conflicts = [];
       scene.actorConflicts.get(actor).forEach((conflict, i) => {
-        if (conflict.type == "regular") {
+        if (conflict.type === "regular") {
           conflicts.push(<li key={"conflict-" + i}>{moment(conflict.date).format('MMM Do') + ' ' +
                           timeIntegerToString(parseInt(conflict.start)) + ' - '
                           + timeIntegerToString(parseInt(conflict.end))
                         }</li>);
-        } else if (conflict.type == "recurring") {
-          conflicts.push(<li key={"conflict-" + i}>{"(recurring) " + conflict.date + "s" + ' ' +
+        } else if (conflict.type === "recurring") {
+          conflicts.push(<li key={"conflict-" + i}>{"(recurring) " + conflict.date + "s '" +
                           timeIntegerToString(parseInt(conflict.start)) + ' - '
                           + timeIntegerToString(parseInt(conflict.end))
                         }</li>);

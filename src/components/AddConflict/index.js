@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 
-import { withAuthUser, withAuthorization, withAuthentication } from '../Session';
-import { withFirebase } from '../Firebase';
+import { withAuthUser, withAuthorization } from '../Session';
 import { Container, Row, Col, Form, Alert, Button } from 'react-bootstrap';
-import { Card } from 'semantic-ui-react';
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -88,20 +86,20 @@ class PlaysPage extends Component {
 
   updateTime = (e) => {
     let type = e.target.dataset.name;
-    if (type == 'start') {
+    if (type === 'start') {
       this.setState({ start: parseInt(e.target.value) });
     }
-    if (type == 'end') {
+    if (type === 'end') {
       this.setState({ end: parseInt(e.target.value) });
     }
   }
 
   render() {
-    const { play, loading, actor, date, start, end, results} = this.state;
+    const { loading, actor, start, end, results} = this.state;
 
     const cStyle = {marginBottom: '300px'};
 
-    let isInvalid = start >= end || actor=="";
+    let isInvalid = start >= end || actor === "";
 
     return (
       <Container style={cStyle}>
@@ -116,7 +114,7 @@ class PlaysPage extends Component {
               <Form.Row>
                 <Form.Group as={Col}>
                   <Form.Label>Who are you?</Form.Label>
-                  <Form.Control isInvalid={actor == ""} as="select" value={actor} onChange={this.updateActor}>
+                  <Form.Control isInvalid={actor === ""} as="select" value={actor} onChange={this.updateActor}>
                     <option disabled value="">--</option>
                     {
                       this.state.play.actors.map((actor, indx) => {

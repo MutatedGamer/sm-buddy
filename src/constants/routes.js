@@ -9,3 +9,4 @@ export const ADD_PLAY = '/add-play';
 export const PLAYS = '/plays';
 export const PLAY = '/play/:playId';
 export const ADD_CONFLICT = '/addconflict/:playId';
+export const GOOGLE_SIGN_IN = '/googlesignin';

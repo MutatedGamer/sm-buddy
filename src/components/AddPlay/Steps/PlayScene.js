@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Button, Col, Row, Container, Form } from 'react-bootstrap';
+import { Button, Col, Form } from 'react-bootstrap';
 import InputGroup from 'react-bootstrap/InputGroup';
-import TimePicker from '../../TimePicker';
 import { Header } from 'semantic-ui-react';
 
 
@@ -33,19 +32,19 @@ class PlayActor extends Component {
         <Header as="h1">Scenes</Header>
         <Form onChange={this.props.onChange}>
             { scenes.map((val, indx) => {
-              isInvalid = isInvalid || val.title=="";
+              isInvalid = isInvalid || val.title === "";
               return (
                 <div key={indx}>
                   <Form.Row>
                     <Col>
                       <Form.Group>
                         <Form.Label>Title</Form.Label>
-                        <Form.Control isInvalid={val.title == ""} type="text" data-collection="scenes" data-attr="title" data-elementid={indx} placeholder="E.g. 1.1a"/>
+                        <Form.Control isInvalid={val.title === ""} type="text" data-collection="scenes" data-attr="title" data-elementid={indx} placeholder="E.g. 1.1a"/>
                       </Form.Group>
                       <Form.Group>
                         <Form.Label>Characters</Form.Label>
                           { scenes[indx]["characters"].map((val, charIndx) => {
-                              isInvalid = isInvalid || val == "";
+                              isInvalid = isInvalid || val === "";
                               return (
                                 <div key={charIndx}>
                                   <InputGroup className="mb-3">
@@ -58,7 +57,7 @@ class PlayActor extends Component {
                                       data-elementid={indx}
                                       data-charrid={charIndx}
                                       value={val}
-                                      isInvalid={val == ""}
+                                      isInvalid={val === ""}
                                       onChange={this.props.updateCharacter}
                                       >
                                         <option disabled value="">--</option>
@@ -102,7 +101,7 @@ class PlayActor extends Component {
                           />
                       </Form.Group>
                       <Form.Group>
-                        <Button variant="danger" disabled={scenes.length==1} onClick={this.props.deleteItem.bind(this, "scenes", indx)}>Delete Scene</Button>
+                        <Button variant="danger" disabled={scenes.length === 1} onClick={this.props.deleteItem.bind(this, "scenes", indx)}>Delete Scene</Button>
                       </Form.Group>
                     </Col>
                     <Col>
