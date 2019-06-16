@@ -7,7 +7,7 @@ export const config = {
   apiKey: process.env.REACT_APP_API_KEY,
   calendarApiKey: process.env.REACT_APP_CALENDAR_API_KEY,
   authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-  clientId: '953918677835-evv4uf18vouqe0vlgajvv8eiibev4ij2.apps.googleusercontent.com',
+  clientId: process.env.REACT_APP_CLIENT_ID,
   databaseURL: process.env.REACT_APP_DATABASE_URL,
   projectId: process.env.REACT_APP_PROJECT_ID,
   storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
