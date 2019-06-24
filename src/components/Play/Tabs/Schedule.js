@@ -70,8 +70,10 @@ class SchedulePage extends Component {
           calendarId: null,
           showNewEventModal: false,
           modalScene: null,
+          calendarHasChanged: false
       };
       this.handleModalClose = this.handleModalClose.bind(this);
+      this.updateCalendarHasChange = this.updateCalendarHasChange.bind(this);
     }
 
 
@@ -280,6 +282,10 @@ class SchedulePage extends Component {
     this.setState({ showNewEventModal: false });
   }
 
+  updateCalendarHasChange(value) {
+    this.setState({calendarHasChanged: value})
+  }
+
   render() {
     if (this.state.loading) {
       return <div>Loading...</div>
@@ -288,6 +294,7 @@ class SchedulePage extends Component {
     if (this.state.loading) {
       return "loading...";
     }
+
     return (
       <Container fluid>
         {this.state.showNewEventModal && <NewEventModal
@@ -298,9 +305,24 @@ class SchedulePage extends Component {
 				<DragDropContext onDragEnd={this.onDragEnd} onDragUpdate={this.onDragUpdate}>
         <Row>
           <Col xs={12} xl={4}>
-            <h1>Current Schedule</h1>
+            <h1>
+              Current Schedule
+              { this.state.calendarHasChanged &&
+                <ButtonGroup className="float-right">
+                  <Button variant="danger" onClick={this.refs.calendar.getEvents} size="sm" >Undo all and resync</Button>
+                  <Button variant="success" onClick={this.refs.calendar.commitEvents} size="sm" >Commit Changes</Button>
+                </ButtonGroup>
+              }
+            </h1>
             <Dimmer.Dimmable as={Segment} blurring dimmed={this.state.calendarOverlay}>
-              {this.state.play.calendarId && <Calendar {... this.props} ref="calendar" handleClose={this.handleModalClose} calendarId={this.state.play.calendarId} /> }
+              {this.state.play.calendarId &&
+                <Calendar
+                {... this.props}
+                ref="calendar"
+                handleClose={this.handleModalClose}
+                calendarHasChangedCallback = {this.updateCalendarHasChange}
+                calendarId={this.state.play.calendarId} />
+              }
               <Dimmer inverted active={this.state.calendarOverlay}>
                 <Header as='h2' icon inverted>
                   <Icon name='plus' color="green"/>

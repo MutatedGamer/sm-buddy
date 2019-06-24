@@ -21,7 +21,7 @@ class Scenes extends Component {
       // cannot be 0, but make it super tiny
       transitionDuration: `0.001s`,
     };
-  } 
+  }
 
 
 
@@ -44,7 +44,7 @@ class Scenes extends Component {
                     <Draggable key={scene.title} draggableId={scene.title} index={i}>
                     {(provided, snapshot) => (
 
-                    
+
                     <div
                       ref={provided.innerRef}
                       {...provided.draggableProps}
