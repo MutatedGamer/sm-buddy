@@ -16,13 +16,15 @@ class SceneInfo extends Component {
                           + timeIntegerToString(parseInt(conflict.end))
                         }</li>);
         } else if (conflict.type === "recurring") {
-          conflicts.push(<li key={"conflict-" + i}>{"(recurring) " + conflict.date + "s '" +
+          conflicts.push(<li key={"conflict-" + i}>{"(recurring) " + conflict.date + "s " +
                           timeIntegerToString(parseInt(conflict.start)) + ' - '
                           + timeIntegerToString(parseInt(conflict.end))
                         }</li>);
         }
       });
-      actors.push(<li key={actor}>{actor}<ul>{conflicts}</ul></li>)
+      if (conflicts.length >0) {
+        actors.push(<li key={actor}>{actor}<ul>{conflicts}</ul></li>)
+      }
     };
     return actors;
   }
