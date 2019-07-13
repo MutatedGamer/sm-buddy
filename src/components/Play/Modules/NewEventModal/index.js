@@ -217,7 +217,7 @@ function dateConflicts(date, conflict) {
       return true
     }
   } else if (conflict.type === "recurring") {
-    if (moment(date).format('dddd').toLowerCase() === conflict.date) {
+    if (moment(date).format('dddd').toLowerCase() === conflict.date.toLowerCase()) {
       return true
     }
   }

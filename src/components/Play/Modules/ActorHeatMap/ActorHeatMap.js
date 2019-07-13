@@ -116,7 +116,7 @@ class ActorHeatMap extends Component {
                 jIndices.push(i);
               }
             } else if (conflict.type === "recurring") {
-              if (days[i].format('dddd').toLowerCase() === conflict.date) {
+              if (days[i].format('dddd').toLowerCase() === conflict.date.toLowerCase()) {
                 jIndices.push(i);
               }
             }
