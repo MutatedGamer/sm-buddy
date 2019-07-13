@@ -6,7 +6,7 @@ const App = () => (
   <div>
     <h1>App</h1>
     <Row className="align-items-center">
-      <Col xs={6} className="mx-auto">
+      <Col xs={12} lg={6} className="mx-auto">
         <div class="jumbotron">
           <Card className="card-video">
             <Card.Body className="p-0">
