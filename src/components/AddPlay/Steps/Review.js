@@ -29,6 +29,7 @@ class Review extends Component {
 
     return (
       <div>
+        <Header as="h2">{values.error}</Header>
         <Header as="h1">Review and Submit</Header>
         <Header as="h3">Name: </Header><p>{name}</p>
         <Header as="h3">Description: </Header><p>{description}</p>

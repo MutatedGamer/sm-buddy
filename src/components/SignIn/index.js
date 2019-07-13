@@ -10,10 +10,7 @@ import * as ROUTES from '../../constants/routes';
 const SignInPage = () => (
   <div>
     <h1>SignIn</h1>
-    <SignInForm />
     <SignInGoogle />
-		<PasswordForgetLink />
-    <SignUpLink />
   </div>
 );
 
@@ -92,11 +89,12 @@ class SignInGoogleBase extends Component {
     this.props.firebase
       .doSignInWithGoogle()
       .then(socialAuthUser => {
-        this.setState({ error: null });
-        this.props.history.push(ROUTES.HOME);
+        console.log("here")
+        this.setState({ ...INITIAL_STATE });
+        this.props.history.push(ROUTES.PLAYS);
       })
       .catch(error => {
-        // this.setState({ error });
+        this.setState({ error });
       });
 
     event.preventDefault();

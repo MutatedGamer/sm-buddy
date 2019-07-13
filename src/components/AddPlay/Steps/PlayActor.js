@@ -22,6 +22,7 @@ class PlayActor extends Component {
     let actors = values.actors;
     return (
       <div>
+        <Header as="h2">{values.error}</Header>
         <Header as="h1">Actors</Header>
         <Form onChange={this.props.onChange}>
 

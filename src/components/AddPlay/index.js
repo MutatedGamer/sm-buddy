@@ -8,6 +8,7 @@ import { firestore } from 'firebase';
 import PlayName from './Steps/PlayName';
 import PlayActor from './Steps/PlayActor';
 import PlayScene from './Steps/PlayScene';
+import PlayCallLetters from './Steps/PlayCallLetters';
 import ReviewPage from './Steps/Review';
 
 const INITIAL_STATE = {
@@ -19,6 +20,7 @@ const INITIAL_STATE = {
     actors: [{name:"", email:"", characters:[""], notes:"", unavailibilities: []}],
     scenes: [{title:"", characters:[""], notes:"", block:0, table:0}],
     calendar: "",
+    callLetters: new Map(),
 }
 class AddPlayPage extends Component {
   constructor(props) {
@@ -65,6 +67,7 @@ class AddPlayPage extends Component {
       characters.forEach((character, index) => {
         show.collection("characters").add({
           name: character,
+          letters: this.state.callLetters.get(character)
         })
         .then((charDocRef) => {
           characterMap.set(character, charDocRef.id);
@@ -175,8 +178,6 @@ class AddPlayPage extends Component {
     e.stopPropagation();
   }
 
-
-
   addActor = (e) => {
     e.preventDefault();
     this.setState((prevState) => ({
@@ -243,8 +244,6 @@ class AddPlayPage extends Component {
     }));
   }
 
-
-
   removeUnavailbility = (i, dataIndx, e) => {
     e.preventDefault();
     let actors = [...this.state.actors];
@@ -255,6 +254,16 @@ class AddPlayPage extends Component {
       actors
     }));
   }
+
+  updateCallLetters = (character, e) => {
+    e.preventDefault()
+    const callLetters = this.state.callLetters;
+    callLetters.set(character, e.target.value)
+    this.setState((prevState) => ({
+      callLetters
+    }));
+  }
+
   render() {
       return (
           <Container>
@@ -281,8 +290,9 @@ class AddPlayPage extends Component {
           scenes,
           calendar,
           email,
+          callLetters,
       } = this.state;
-      const values = { name, description, actors, scenes, calendar, email};
+      const values = { name, description, actors, scenes, calendar, email, callLetters};
       switch (step) {
         case 1:
           return <PlayName
@@ -308,6 +318,14 @@ class AddPlayPage extends Component {
                   values = {values}
                   />
         case 3:
+          return <PlayCallLetters
+                  { ... this.props }
+                  nextStep = { this.nextStep }
+                  prevStep = {this.prevStep}
+                  updateCallLetters = { this.updateCallLetters }
+                  values = { values }
+                  />
+        case 4:
           return <PlayScene
                   nextStep = {this.nextStep}
                   prevStep = {this.prevStep}
@@ -322,7 +340,7 @@ class AddPlayPage extends Component {
                   deleteItem= {this.deleteItem}
                   values = {values}
                   />
-          case 4:
+          case 5:
             return <ReviewPage
               nextStep = {this.nextStep}
               prevStep = {this.prevStep}

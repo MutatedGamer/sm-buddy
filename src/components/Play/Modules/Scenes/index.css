@@ -7,3 +7,13 @@
 .selected {
   box-shadow: 0 0 5px rgb(40, 120, 59);
 }
+
+.custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #4483cc!important;
+  border: 1px solid #4483cc!important;
+}
+
+.staged .custom-control-input:checked ~ .custom-control-label::before {
+  background-color: #c0e03f!important;
+  border: 1px solid #c0e03f!important;
+}

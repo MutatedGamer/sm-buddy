@@ -50,15 +50,15 @@ class PlayPage extends Component {
 
     var panes = [
       { menuItem: 'Info', render: () => <Tab.Pane attached={false}><InfoPage values={this.state}/></Tab.Pane>},
-      { menuItem: 'Schedule', render: () => <Tab.Pane attached={false}><SchedulePage {... this.props} values={this.state} /></Tab.Pane> },
-      { menuItem: 'Tab 3', render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane> },
+      { menuItem: 'Schedule', render: () => <Tab.Pane attached={false}><SchedulePage {... this.props} values={this.state} /></Tab.Pane> }
+      // { menuItem: 'Tab 3', render: () => <Tab.Pane attached={false}>Tab 3 Content</Tab.Pane> },
     ];
 
     return (
         <Row>
           <Col>
             <h1>{this.state.play.name} Management Page</h1>
-            <Tab activeIndex={1} menu={{ secondary: true, pointing: true}} panes={panes} />
+            <Tab menu={{ secondary: true, pointing: true}} panes={panes} />
         </Col>
       </Row>
     );

@@ -29,6 +29,7 @@ class PlayActor extends Component {
     characters = Array.from(characters).sort();
     return (
       <div>
+        <Header as="h2">{values.error}</Header>
         <Header as="h1">Scenes</Header>
         <Form onChange={this.props.onChange}>
             { scenes.map((val, indx) => {

@@ -60,7 +60,7 @@ class PlaysPage extends Component {
       snapshot.forEach((doc) => {
         let actorId = doc.id;
         this.show.collection("actors").doc(actorId).collection("conflicts").add({
-          date: this.state.date,
+          date: new Date(this.state.date.toDateString()),
           start: parseInt(this.state.start),
           end: parseInt(this.state.end),
         })

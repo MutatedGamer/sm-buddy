@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { withAuthUser, withAuthorization } from '../Session';
 import { withFirebase } from '../Firebase';
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col, Alert } from 'react-bootstrap';
 import { Card } from 'semantic-ui-react';
 import FAB from '../FAB';
 
@@ -58,7 +58,7 @@ class PlaysPage extends Component {
         orderBy: 'startTime'
       }).then(events => {
         console.log(events.result.items);
-      }); 
+      });
     });
   }
 
@@ -80,7 +80,7 @@ class PlaysPage extends Component {
           <Col>
             <h1>Admin</h1>
             {loading && <div>Loading ...</div>}
-            <PlayList plays={plays} />
+            {!loading && (plays.length > 0) ? <PlayList plays={plays} /> : <Placeholder />}
             <div className="fabContainer" style={fabStyle}>
                 <FAB />
             </div>
@@ -90,6 +90,15 @@ class PlaysPage extends Component {
   }
 }
 
+const Placeholder = () => (
+  <Alert variant="success">
+    <Alert.Heading>Welcome to SM buddy!</Alert.Heading>
+    <p>
+      It looks like you don't have any plays made yet. Go ahead and click the plus button
+      down in the bottom right of this page to get started on your adventure with SM Buddy!
+    </p>
+  </Alert>
+)
 
 const PlayList = ({ plays }) => (
     <div className="d-flex flex-wrap justify-content-start">

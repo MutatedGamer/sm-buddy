@@ -40,6 +40,9 @@ class Scenes extends Component {
           <div ref={provided.innerRef} {...provided.droppableProps} className="d-flex flex-wrap flex-column justify-content-start">
               {
                 this.props.values.play.scenes.map((scene, i) => {
+                  const applyStagedTabled = scene.stagedTabled && !scene.tabled;
+                  const applyStagedBlocked = scene.stagedBlocked && !scene.blocked;
+
                   return (
                     <Draggable key={scene.title} draggableId={scene.title} index={i}>
                     {(provided, snapshot) => (
@@ -55,8 +58,20 @@ class Scenes extends Component {
                       <Card className={scene.selected? "m-2 scene selected" : "m-2 scene"}>
                         <Card.Body>
                           <Card.Title>{scene.title}</Card.Title>
-                            <Form.Check type="checkbox" label={"Tabled (" + scene.table + ' mins needed)'} checked={scene.tabled } custom={true} readOnly={true}/>
-                            <Form.Check type="checkbox" label={"Blocked (" + scene.blocking + ' mins needed)'} checked={scene.blocked} custom={true} readOnly={true}  />
+                            <Form.Check
+                              type="checkbox"
+                              className={applyStagedTabled && "staged"}
+                              label={"Tabled (" + scene.table + ' mins needed)'}
+                              checked= {scene.tabled || scene.stagedTabled}
+                              custom={true}
+                              readOnly={true}/>
+                            <Form.Check
+                              type="checkbox"
+                              className={applyStagedBlocked && "staged"}
+                              label={"Blocked (" + scene.blocking + ' mins needed)'}
+                              checked={scene.blocked || scene.stagedBlocked}
+                              custom={true}
+                              readOnly={true}  />
                         </Card.Body>
                       </Card>
                     </div>

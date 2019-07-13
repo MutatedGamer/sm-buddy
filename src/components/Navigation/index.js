@@ -36,11 +36,6 @@ const NavigationAuth = () => (
           </LinkContainer>
         </Nav.Item>
         <Nav.Item>
-          <LinkContainer to={ROUTES.ACCOUNT}>
-            <Nav.Link>Account</Nav.Link>
-          </LinkContainer>
-        </Nav.Item>
-        <Nav.Item>
           <LinkContainer to={ROUTES.PLAYS}>
             <Nav.Link>My Plays</Nav.Link>
           </LinkContainer>
@@ -72,11 +67,6 @@ const NavigationNonAuth = () => (
       <Nav className="mr-auto">
       </Nav>
       <Nav>
-        <Nav.Item>
-          <LinkContainer to={ROUTES.SIGN_UP}>
-            <Nav.Link>Signup</Nav.Link>
-          </LinkContainer>
-        </Nav.Item>
         <Nav.Item>
           <LinkContainer to={ROUTES.SIGN_IN}>
             <Nav.Link>Login</Nav.Link>

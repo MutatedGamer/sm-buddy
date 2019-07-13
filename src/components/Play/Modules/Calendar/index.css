@@ -1,0 +1,11 @@
+.rbc-event {
+  z-index: 999 !important;
+}
+
+.rbc-month-view {
+  height: 1200px;
+}
+
+.rbc-time-view {
+  height: 3500px;
+}

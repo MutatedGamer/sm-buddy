@@ -11,7 +11,6 @@ import SignInPage from '../SignIn';
 import GoogleSignInPage from '../SignIn';
 import PasswordForgetPage from '../PasswordForget';
 import HomePage from '../Home';
-import AccountPage from '../Account';
 import PlaysPage from '../Plays';
 import PlayPage from '../Play';
 import AddPlayPage from '../AddPlay';
@@ -29,7 +28,6 @@ const App = () => (
         <Row>
           <Col>
             <Route exact path={ROUTES.LANDING} component={LandingPage} />
-            <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
             <Route path={ROUTES.SIGN_IN} component={SignInPage} />
             <Route path={ROUTES.GOOGLE_SIGN_IN} component={GoogleSignInPage} />
             <Route
@@ -37,7 +35,6 @@ const App = () => (
               component={PasswordForgetPage}
             />
             <Route path={ROUTES.HOME} component={HomePage} />
-            <Route path={ROUTES.ACCOUNT} component={AccountPage} />
             <Route path={ROUTES.PLAYS} component={PlaysPage} />
             <Route path={ROUTES.PLAY} component={PlayPage} />
             <Route path={ROUTES.ADD_CONFLICT} component={AddConflictPage} />

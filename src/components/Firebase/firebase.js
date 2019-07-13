@@ -73,12 +73,17 @@ class Firebase {
 
   async initClient() {
     let gapi = await require('google-client-api')()
-    gapi.client.init({
-      apiKey: config.calendarApiKey,
-      clientId: config.clientId,
-      scope: config.scope
-    })
-    return gapi;
+    try {
+      gapi.client.init({
+        apiKey: config.calendarApiKey,
+        clientId: config.clientId,
+        scope: config.scope
+      })
+      return gapi;
+    } catch (e) {
+      // Try again?
+      window.location.reload();
+    }
   }
 
 }

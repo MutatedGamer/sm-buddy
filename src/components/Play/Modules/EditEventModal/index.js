@@ -29,7 +29,7 @@ class EditEventModal extends Component {
           <Modal.Body>
             <Form>
               <Form.Row>
-                <Col>
+                <Form.Group as={Col}>
                   <Form.Label>Event Title</Form.Label>
                   <Form.Control
                     as="input"
@@ -37,10 +37,10 @@ class EditEventModal extends Component {
                     rows="10"
                     value={title}
                     onChange={this.onChange} />
-                  </Col>
+                  </Form.Group>
               </Form.Row>
               <Form.Row>
-                <Col>
+                <Form.Group as={Col}>
                   <Form.Label>Event Description</Form.Label>
                   <Form.Control
                     as="textarea"
@@ -48,7 +48,7 @@ class EditEventModal extends Component {
                     rows="10"
                     value={description}
                     onChange={this.onChange} />
-                  </Col>
+                  </Form.Group>
               </Form.Row>
             </Form>
           </Modal.Body>

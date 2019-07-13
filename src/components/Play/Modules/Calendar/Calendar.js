@@ -17,7 +17,7 @@ class Calendar extends Component {
 
 	EventNoDescription({ event }) {
 	  return (
-	    <div onClick={() => this.editEvent(event)} style={{height: "100%"}}>
+	    <div className="event" onClick={() => this.editEvent(event)} style={{height: "100%"}}>
 	      <p>{event.title}</p>
 	    </div>
 	  )
@@ -25,7 +25,7 @@ class Calendar extends Component {
 
 	EventWithDescription({ event }) {
 	  return (
-			<div onClick={() => this.editEvent(event)} style={{height: "100%"}}>
+			<div className="event" onClick={() => this.editEvent(event)} style={{height: "100%"}}>
 	      <p>{event.title}</p>
 	      {event.description && event.description}
 	    </div>
@@ -196,6 +196,8 @@ class Calendar extends Component {
   }
 
 	async commitEvents() {
+		this.props.calendarHasChangedCallback(false)
+		// TODO: change in firestore
 		console.log("Committing events")
 		await asyncForEach(this.state.events, async event => {
 			if (this.state.eventsBackup.includes(event)) {
@@ -239,7 +241,13 @@ class Calendar extends Component {
 				});
 			}
 		});
+		this.props.commitStagedScenes();
 		this.getEvents();
+	}
+
+	handleSelectEvent(event,target) {
+		let obj = target.currentTarget;
+		obj.getElementsByClassName('event')[0].click();
 	}
 
 	render() {
@@ -257,19 +265,18 @@ class Calendar extends Component {
                 style={{display: "block", transform: "none !important"}}
               >
                 <DragAndDropCalendar
-                  selectable
                   resizable
                   localizer={localizer}
 									popup={true}
                   events={this.state.events}
                   onEventDrop={this.moveEvent}
                   onEventResize={this.resizeEvent}
-                  onSelectSlot={this.newEvent}
+									onSelectEvent={this.handleSelectEvent}
                   defaultView={BigCalendar.Views.WEEK}
                   defaultDate={new Date()}
                   resizableAccessor={() => true}
                   views={{ month: true, week: true, day: true }}
-                  style={{ height: "2000px" }}
+                  style={{ height: "100%" }}
 									step={5}
 									timeslots={6}
 									min={new Date('December 17, 1995 06:00:00')}

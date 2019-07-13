@@ -25,8 +25,10 @@ function Conflict(date, start, end, type="regular") {
 
 
 // Scene Class
-function Scene(title, table, blocking, notes, tabled, blocked) {
+function Scene(id, title, table, blocking, notes, tabled, blocked) {
+  this.id = id;
   this.characters = [];
+  this.callLetters = new Map();
   this.actorConflicts = new Map();
   this.title = title;
   this.blocking = blocking;
@@ -35,21 +37,24 @@ function Scene(title, table, blocking, notes, tabled, blocked) {
   this.blocked = blocked;
   this.tabled = tabled;
   this.selected = false;
+  this.stagedBlocked = false;
+  this.stagedTabled = false;
 }
 
-Scene.prototype.addCharacter = function(character) {
+Scene.prototype.addCharacter = function(character, letters) {
   this.characters.push(character);
+  this.callLetters.set(character, letters)
 }
 
 Scene.prototype.addActor = function(actor) {
   if (!this.actorConflicts.has(actor)) {
-    this.actorConflicts[actor] = [];
+    this.actorConflicts.set(actor, [])
   }
 }
 
 Scene.prototype.addConflict = function(actor, conflict) {
   // assumes actor is already added to scene
-  this.actorConflicts.set(actor, this.actorConflicts[actor].concat([conflict]));
+  this.actorConflicts.set(actor, this.actorConflicts.get(actor).concat([conflict]));
 }
 
 
@@ -93,11 +98,13 @@ class SchedulePage extends Component {
             scenes: [],
         };
         await this.unsubscribe.push(this.show.collection("actors").onSnapshot(snapshot => {
+          play.actors = [];
           snapshot.forEach(doc => {
             play.actors.push(doc.data().name);
           });
         }));
         await this.unsubscribe.push(this.show.collection("scenes").orderBy("title").onSnapshot(snapshot => {
+          play.scenes = [];
           snapshot.forEach(doc => {
             let title = doc.data().title;
             let notes = doc.data().notes;
@@ -106,18 +113,19 @@ class SchedulePage extends Component {
             let characters = doc.data().characters;
             let tabled = doc.data().tabled;
             let blocked = doc.data().blocked;
+            let id = doc.id;
 
-            let scene = new Scene(title, table, blocking, notes, tabled, blocked);
+            let scene = new Scene(id, title, table, blocking, notes, tabled, blocked);
             // Get all characters in this scene
             characters.forEach(async (character) => {
               await this.unsubscribe.push(character.onSnapshot(charSnapshot => {
-                scene.addCharacter(charSnapshot.data().name);
+                scene.addCharacter(charSnapshot.data().name, charSnapshot.data().letters);
                 this.setState({
                   play,
                 });
               }));
               // Get every actor that plays this character and add all conflicts they have
-              this.unsubscribe.push(this.show.collection("actors").where("characters", "array-contains", character)
+              await this.unsubscribe.push(this.show.collection("actors").where("characters", "array-contains", character)
                       .onSnapshot(async (actorsSnapshot) => {
                 actorsSnapshot.forEach(async (actor) => {
                   let actorName = actor.data().name;
@@ -181,7 +189,6 @@ class SchedulePage extends Component {
       }
     }
 
-
   selectScene = (i) => {
     let play = this.state.play;
     let scene = play.scenes[i];
@@ -241,7 +248,6 @@ class SchedulePage extends Component {
 
     if (source.droppableId === "scenes" && destination.droppableId === "calendar") {
       let scene = this.state.play.scenes[source.index];
-      console.log(scene);
       this.setState({
         showNewEventModal: true,
         modalScene: scene,
@@ -266,7 +272,6 @@ class SchedulePage extends Component {
   updateScenesToShow() {
     var scenesToShow = [];
     if (this.state.showAll) {
-      console.log("Showing all");
       scenesToShow = this.state.play.scenes;
     } else {
       this.state.play.scenes.forEach(scene => {
@@ -286,6 +291,41 @@ class SchedulePage extends Component {
     this.setState({calendarHasChanged: value})
   }
 
+  undoStagedEvents = () => {
+    this.refs.calendar.getEvents()
+    const play = this.state.play;
+    play.scenes.forEach(scene => {
+      scene.stagedTabled = false
+      scene.stagedBlocked = false
+    })
+    this.setState({play: play});
+  }
+
+  addSceneToCalendar = ({date, start, duration, title, body, type}) => {
+    this.refs.calendar.addScene({date, start, duration, title, body})
+    const modalScene = this.state.modalScene
+    if (type == "table") {
+      modalScene.stagedTabled = true
+    } else {
+      modalScene.stagedBlocked = true
+    }
+    this.setState({ modalScene })
+  }
+
+  commitStagedScenes = () => {
+    this.state.play.scenes.forEach(scene => {
+      if (scene.stagedTabled || scene.stagedBlocked) {
+        this.show.collection("scenes").doc(scene.id).set(
+          {
+          blocked: scene.blocked || scene.stagedBlocked,
+          tabled: scene.tabled || scene.stagedTabled
+          },
+          { merge: true },
+        );
+      }
+    })
+  }
+
   render() {
     if (this.state.loading) {
       return <div>Loading...</div>
@@ -301,15 +341,15 @@ class SchedulePage extends Component {
           show={this.state.showNewEventModal}
           scene={this.state.modalScene}
           handleClose={this.handleModalClose}
-          handleSubmit={this.refs.calendar.addScene} /> }
+          handleSubmit={this.addSceneToCalendar} /> }
 				<DragDropContext onDragEnd={this.onDragEnd} onDragUpdate={this.onDragUpdate}>
         <Row>
-          <Col xs={12} xl={4}>
+          <Col sm={12} xl={5} lg={9}>
             <h1>
               Current Schedule
               { this.state.calendarHasChanged &&
                 <ButtonGroup className="float-right">
-                  <Button variant="danger" onClick={this.refs.calendar.getEvents} size="sm" >Undo all and resync</Button>
+                  <Button variant="danger" onClick={this.undoStagedEvents} size="sm" >Undo all and resync</Button>
                   <Button variant="success" onClick={this.refs.calendar.commitEvents} size="sm" >Commit Changes</Button>
                 </ButtonGroup>
               }
@@ -321,7 +361,8 @@ class SchedulePage extends Component {
                 ref="calendar"
                 handleClose={this.handleModalClose}
                 calendarHasChangedCallback = {this.updateCalendarHasChange}
-                calendarId={this.state.play.calendarId} />
+                calendarId={this.state.play.calendarId}
+                commitStagedScenes={this.commitStagedScenes}/>
               }
               <Dimmer inverted active={this.state.calendarOverlay}>
                 <Header as='h2' icon inverted>
@@ -331,38 +372,35 @@ class SchedulePage extends Component {
               </Dimmer>
             </Dimmer.Dimmable>
           </Col>
-          <Col xs={12} xl={8}>
+
+          <Col sm={12} xl={3} lg={3}>
+            <h1>Scenes</h1>
+                <Scenes values={this.state} selectScene={this.selectScene} selectAllScenes={this.selectAllScenes} showAll={this.state.showAll} />
+          </Col>
+          <Col sm={12} xl={4} lg={12}>
             <Row>
-              <Col xs={12} xl={4}>
-                <h1>Scenes</h1>
-                    <Scenes values={this.state} selectScene={this.selectScene} selectAllScenes={this.selectAllScenes} showAll={this.state.showAll} />
-              </Col>
               <Col>
-                <Row>
-                  <Col>
-                    <div>
-                      <h1>
-                        Availability Heatmaps
-                        <ButtonGroup className="float-right">
-                          <Button variant="danger" size="sm" onClick={this.removeHeatmap}><FontAwesomeIcon icon={faMinus} /></Button>
-                          <Button variant="success" size="sm" onClick={this.addHeatmap}><FontAwesomeIcon icon={faPlus} /></Button>
-                        </ButtonGroup>
-                      </h1>
-                    </div>
-                    {Array.from({ length: this.state.numHeatMaps},
-                      (_, index) => <ActorHeatMap
-                                    {...this.props}
-                                    scenes = {this.state.scenesToShow}
-                                    key={index}
-                                    />)}
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <h1>Scene Info/Breakdown</h1>
-                    <SceneInfo scenes={this.state.scenesToShow} />
-                  </Col>
-                </Row>
+                <div>
+                  <h1>
+                    Availability Heatmaps
+                    <ButtonGroup className="float-right">
+                      <Button variant="danger" size="sm" onClick={this.removeHeatmap}><FontAwesomeIcon icon={faMinus} /></Button>
+                      <Button variant="success" size="sm" onClick={this.addHeatmap}><FontAwesomeIcon icon={faPlus} /></Button>
+                    </ButtonGroup>
+                  </h1>
+                </div>
+                {Array.from({ length: this.state.numHeatMaps},
+                  (_, index) => <ActorHeatMap
+                                {...this.props}
+                                scenes = {this.state.scenesToShow}
+                                key={index}
+                                />)}
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <h1>Scene Info/Breakdown</h1>
+                <SceneInfo scenes={this.state.scenesToShow} />
               </Col>
             </Row>
           </Col>
