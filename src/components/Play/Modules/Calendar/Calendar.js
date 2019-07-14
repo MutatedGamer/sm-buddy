@@ -44,20 +44,36 @@ class Calendar extends Component {
 	}
 
 	handleModalSubmit({title, description}){
-		const { events } = this.state
+		const { events, stagedEvents, stagedEventsBackup } = this.state
 		let event = this.state.editEvent
 
-    const idx = events.indexOf(event)
+		if (event.title === title && event.description === description) {
+			// If haven't changed anything
+			this.handleModalClose()
+			return
+		}
 
+    let idx = events.indexOf(event)
+		if (idx === -1) {
+			// Event was already staged before
+			idx = stagedEvents.indexOf(event)
+			stagedEvents.splice(idx, 1) // remove old staged event
+		} else {
+			// Event was not staged before
+			stagedEventsBackup.push(event) // Backup unstaged version
+			events.splice(idx, 1) // Remove old event
+		}
 
     const updatedEvent = { ...event, title, description}
 
     const nextEvents = [...events]
-    nextEvents.splice(idx, 1, updatedEvent)
+    stagedEvents.push(updatedEvent)
 
 
     this.setState({
-      events: nextEvents,
+      events,
+			stagedEvents,
+			stagedEventsBackup
     })
 		this.props.calendarHasChangedCallback(true)
 		this.handleModalClose()
@@ -68,6 +84,8 @@ class Calendar extends Component {
     this.state = {
       draggedEvent: null,
       events: [],
+			stagedEvents: [],
+			stagedEventsBackup: [],
 			eventsBackup: [],
 			showEditModal: false,
 			editEvent: null,
@@ -92,6 +110,8 @@ class Calendar extends Component {
         calendarId: this.props.calendarId,
       }).then(response => {
         let events = []
+				let stagedEvents = []
+				let stagedEventsBackup = []
         response.result.items.forEach((item) => {
 						let allDay = item.start.dateTime == null;
 						let startDate = allDay? item.start.date : item.start.dateTime
@@ -102,12 +122,14 @@ class Calendar extends Component {
                 'end': moment(endDate).toDate(),
                 'allDay': allDay,
                 'id': item.id,
-								'description': item.description
+								'description': item.description,
+								'canCancel': false
               });
           });
           this.setState(
 						{ events,
-							eventsBackup: events.slice(0),
+							stagedEvents,
+							stagedEventsBackup
 						});
 					this.props.calendarHasChangedCallback(false)
       });
@@ -118,13 +140,13 @@ class Calendar extends Component {
     this.setState({ draggedEvent: name })
   }
 
-	addScene({date, start, duration, title, body}) {
+	addScene({date, start, duration, title, body, id}) {
 		date.setHours(0, 0, 0);
 		let mDateStart = moment(date);
 		let mDateEnd = moment(date);
 		mDateStart.add(parseInt(start), 'seconds');
 		mDateEnd.add(parseInt(start) + duration, 'seconds');
-		let events = this.state.events;
+		let stagedEvents = this.state.stagedEvents;
 		let event = {
 				'title': title,
 				'start': mDateStart.toDate(),
@@ -132,16 +154,29 @@ class Calendar extends Component {
 				'allDay': false,
 				'description': body,
 				'id': null,
+				'canCancel': true,
+				'sceneId': id
 			};
-			this.setState({events: events.concat([event])});
+			this.setState({stagedEvents: stagedEvents.concat([event])});
 			this.props.handleClose()
 			this.props.calendarHasChangedCallback(true)
 	}
 
 	moveEvent({ event, start, end, isAllDay: droppedOnAllDaySlot }) {
-		const { events } = this.state
+		const { events, stagedEvents, stagedEventsBackup } = this.state
 
-    const idx = events.indexOf(event)
+    let idx = events.indexOf(event)
+		if (idx === -1) {
+			// Event was already staged before
+			idx = stagedEvents.indexOf(event)
+			stagedEvents.splice(idx, 1) // remove old staged event
+		} else {
+			// Event was not staged before
+			stagedEventsBackup.push(event) // Backup unstaged version
+			events.splice(idx, 1) // Remove old event
+		}
+
+
     let allDay = event.allDay
 
     if (!event.allDay && droppedOnAllDaySlot) {
@@ -150,31 +185,43 @@ class Calendar extends Component {
       allDay = false
     }
 
-    const updatedEvent = { ...event, start, end, allDay}
+    const updatedEvent = { ...event, start, end, allDay, canCancel: true}
 
-    const nextEvents = [...events]
-    nextEvents.splice(idx, 1, updatedEvent)
+		// Add updated event to staged events
+    stagedEvents.push(updatedEvent)
 
     this.setState({
-      events: nextEvents,
+      events,
+			stagedEvents,
+			stagedEventsBackup
     })
 		this.props.calendarHasChangedCallback(true)
   }
 
   resizeEvent = ({ event, start, end }) => {
-		const { events } = this.state
+		const { events, stagedEvents, stagedEventsBackup } = this.state
 
-    const idx = events.indexOf(event)
+		let idx = events.indexOf(event)
+		if (idx === -1) {
+			// Event was already staged before
+			idx = stagedEvents.indexOf(event)
+			stagedEvents.splice(idx, 1) // remove old staged event
+		} else {
+			// Event was not staged before
+			stagedEventsBackup.push(event) // Backup unstaged version
+			events.splice(idx, 1) // Remove old event
+		}
 
 
-    const updatedEvent = { ...event, start, end}
+    const updatedEvent = { ...event, start, end, canCancel: true}
 
-    const nextEvents = [...events]
-    nextEvents.splice(idx, 1, updatedEvent)
+    stagedEvents.push(updatedEvent)
 
 
     this.setState({
-      events: nextEvents,
+      events,
+			stagedEvents,
+			stagedEventsBackup
     })
 		this.props.calendarHasChangedCallback(true)
 
@@ -187,10 +234,11 @@ class Calendar extends Component {
       allDay: event.slots.length === 1,
       start: event.start,
       end: event.end,
-			id: null
+			id: null,
+			canCancel: true
     }
     this.setState({
-      events: this.state.events.concat([newEvent]),
+      stagedEvents: this.state.stagedEvents.concat([newEvent]),
     })
 		this.props.calendarHasChangedCallback(true)
   }
@@ -199,7 +247,7 @@ class Calendar extends Component {
 		this.props.calendarHasChangedCallback(false)
 		// TODO: change in firestore
 		console.log("Committing events")
-		await asyncForEach(this.state.events, async event => {
+		await asyncForEach(this.state.stagedEvents, async event => {
 			if (this.state.eventsBackup.includes(event)) {
 				return
 			}
@@ -250,14 +298,51 @@ class Calendar extends Component {
 		obj.getElementsByClassName('event')[0].click();
 	}
 
+	unstageEvent = () => {
+		const event = this.state.editEvent
+		const {events, stagedEvents, stagedEventsBackup} = this.state
+		const backupIndex = stagedEventsBackup.indexOf(stagedEventsBackup.find(backupEvent => {
+			return backupEvent.id !== null && backupEvent.id === event.id
+		}))
+		const stagedIndex = events.indexOf(event)
+
+		// If was moved from Google Calendar
+		if (backupIndex !== -1) {
+			const oldEvent = stagedEventsBackup[backupIndex]
+			events.push(oldEvent)
+			stagedEventsBackup.splice(stagedIndex, 1)
+		}
+
+		// Remove from backup and staged
+		stagedEvents.splice(stagedIndex, 1)
+
+		if (stagedEvents.length === 0) {
+			this.props.calendarHasChangedCallback(false)
+		}
+
+		this.setState({
+			events,
+			stagedEvents,
+			stagedEventsBackup
+		});
+
+		if (event.sceneId !== null) {
+			this.props.handleUnstageSceneCallback(event.sceneId)
+		}
+		this.handleModalClose()
+
+	}
+
 	render() {
     return (
 		<React.Fragment>
 			{this.state.showEditModal && <EditEventModal
+				canCancel={this.state.editEvent.canCancel}
 				show={this.state.showEditModal}
 				event={this.state.editEvent}
 				handleClose={this.handleModalClose}
-				handleSubmit={this.handleModalSubmit} /> }
+				handleSubmit={this.handleModalSubmit}
+				handleUnstage = {this.unstageEvent} /> }
       <Droppable droppableId="calendar">
           {(provided, snapshot) => (
               <div
@@ -266,12 +351,14 @@ class Calendar extends Component {
               >
                 <DragAndDropCalendar
                   resizable
+									selectable
                   localizer={localizer}
 									popup={true}
-                  events={this.state.events}
+                  events={this.state.events.concat(this.state.stagedEvents)}
                   onEventDrop={this.moveEvent}
                   onEventResize={this.resizeEvent}
 									onSelectEvent={this.handleSelectEvent}
+									onSelectSlot={this.newEvent}
                   defaultView={BigCalendar.Views.WEEK}
                   defaultDate={new Date()}
                   resizableAccessor={() => true}
@@ -289,7 +376,7 @@ class Calendar extends Component {
 								        border: "none"
 								      };
 
-								      if (!this.state.eventsBackup.includes(event)){
+								      if (!this.state.events.includes(event)){
 								        newStyle.backgroundColor = "#c0e03f"
 								      }
 

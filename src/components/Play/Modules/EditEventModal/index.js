@@ -53,6 +53,12 @@ class EditEventModal extends Component {
             </Form>
           </Modal.Body>
           <Modal.Footer>
+            {
+              this.props.canCancel &&
+              <Button variant="warning" onClick={this.props.handleUnstage}>
+                Unstage
+              </Button>
+            }
             <Button variant="secondary" onClick={this.props.handleClose}>
               Close
             </Button>

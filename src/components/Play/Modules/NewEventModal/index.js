@@ -25,7 +25,8 @@ class NewEventModal extends Component {
           start: "32400",
           duration: (tabled?this.props.scene.blocking : this.props.scene.table)*60,
           currentConflicts: new Map(),
-          type: tabled?"block":"table"
+          type: tabled?"block":"table",
+          id: this.props.scene.id,
       };
 
       this.appendConflicts = this.appendConflicts.bind(this);
@@ -88,7 +89,7 @@ class NewEventModal extends Component {
 
   render() {
     let scene = this.props.scene;
-    let {body, title, date, start, duration, type} = this.state;
+    let {body, title, date, start, duration, type, id} = this.state;
     return (
       <>
         <Modal show={this.props.show} onHide={this.props.handleClose}>
@@ -180,7 +181,7 @@ class NewEventModal extends Component {
             <Button variant="secondary" onClick={this.props.handleClose}>
               Close
             </Button>
-            <Button variant="primary" onClick={() => this.props.handleSubmit({date, start, duration, title, body, type})}>
+            <Button variant="primary" onClick={() => this.props.handleSubmit({date, start, duration, title, body, type, id})}>
               Add to Calendar
             </Button>
           </Modal.Footer>

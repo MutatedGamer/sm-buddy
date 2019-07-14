@@ -301,8 +301,8 @@ class SchedulePage extends Component {
     this.setState({play: play});
   }
 
-  addSceneToCalendar = ({date, start, duration, title, body, type}) => {
-    this.refs.calendar.addScene({date, start, duration, title, body})
+  addSceneToCalendar = ({date, start, duration, title, body, type, id}) => {
+    this.refs.calendar.addScene({date, start, duration, title, body, id})
     const modalScene = this.state.modalScene
     if (type == "table") {
       modalScene.stagedTabled = true
@@ -324,6 +324,16 @@ class SchedulePage extends Component {
         );
       }
     })
+  }
+
+  unstageScene = (sceneId) => {
+    const play = this.state.play
+    const scene = play.scenes.find(scene => {
+      return scene.id === sceneId
+    })
+    scene.stagedBlocked = false
+    scene.stagedTabled = false
+    this.setState({play})
   }
 
   render() {
@@ -362,7 +372,8 @@ class SchedulePage extends Component {
                 handleClose={this.handleModalClose}
                 calendarHasChangedCallback = {this.updateCalendarHasChange}
                 calendarId={this.state.play.calendarId}
-                commitStagedScenes={this.commitStagedScenes}/>
+                commitStagedScenes={this.commitStagedScenes}
+                handleUnstageSceneCallback = {this.unstageScene} />
               }
               <Dimmer inverted active={this.state.calendarOverlay}>
                 <Header as='h2' icon inverted>
