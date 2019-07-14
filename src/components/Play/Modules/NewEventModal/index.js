@@ -73,7 +73,7 @@ class NewEventModal extends Component {
     const type = e.target.value;
     let title;
     let duration;
-    if (type == "block") {
+    if (type === "block") {
       title = "Rehearsal: Block " + this.props.scene.title;
       duration = this.props.scene.blocking*60
     } else {

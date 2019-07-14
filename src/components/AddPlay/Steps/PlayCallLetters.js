@@ -4,10 +4,6 @@ import { Header } from 'semantic-ui-react';
 
 
 class PlayName extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   back = (e) => {
     e.preventDefault();
     this.props.prevStep();

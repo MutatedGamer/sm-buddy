@@ -6,7 +6,6 @@ import {
 
 import Navigation from '../Navigation';
 import LandingPage from '../Landing';
-import SignUpPage from '../SignUp';
 import SignInPage from '../SignIn';
 import GoogleSignInPage from '../SignIn';
 import PasswordForgetPage from '../PasswordForget';

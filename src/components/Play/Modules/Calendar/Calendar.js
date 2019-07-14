@@ -66,7 +66,6 @@ class Calendar extends Component {
 
     const updatedEvent = { ...event, title, description}
 
-    const nextEvents = [...events]
     stagedEvents.push(updatedEvent)
 
 
@@ -123,7 +122,8 @@ class Calendar extends Component {
                 'allDay': allDay,
                 'id': item.id,
 								'description': item.description,
-								'canCancel': false
+								'canCancel': false,
+								'sceneId': null
               });
           });
           this.setState(
@@ -235,7 +235,8 @@ class Calendar extends Component {
       start: event.start,
       end: event.end,
 			id: null,
-			canCancel: true
+			canCancel: true,
+			sceneId: null
     }
     this.setState({
       stagedEvents: this.state.stagedEvents.concat([newEvent]),

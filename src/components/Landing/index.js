@@ -11,7 +11,7 @@ const App = () => (
           <Card className="card-video">
             <Card.Body className="p-0">
               <div className="embed-responsive embed-responsive-16by9">
-                <iframe className="embed-responsive-item" src={"https://www.youtube.com/embed/VW5qEiCC42A"} allowFullScreen></iframe>
+                <iframe title="landing-video" className="embed-responsive-item" src={"https://www.youtube.com/embed/VW5qEiCC42A"} allowFullScreen></iframe>
               </div>
             </Card.Body>
           </Card>

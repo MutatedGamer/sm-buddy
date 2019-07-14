@@ -304,7 +304,7 @@ class SchedulePage extends Component {
   addSceneToCalendar = ({date, start, duration, title, body, type, id}) => {
     this.refs.calendar.addScene({date, start, duration, title, body, id})
     const modalScene = this.state.modalScene
-    if (type == "table") {
+    if (type === "table") {
       modalScene.stagedTabled = true
     } else {
       modalScene.stagedBlocked = true
