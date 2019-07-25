@@ -8,6 +8,12 @@ import TimePicker from '../../../TimePicker';
 import "react-datepicker/dist/react-datepicker.css";
 var moment = require('moment');
 
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
 class ActorHeatMap extends Component {
   constructor(props) {
     super(props);
@@ -22,16 +28,30 @@ class ActorHeatMap extends Component {
   }
 
   updateDateStart = (date) => {
+    if (date === null) {
+      return
+    }
     if (date >= this.state.endDate) {
       this.setState({startDate: date, endDate: date});
+    } else if (Math.abs(this.state.endDate - date) >= 1209600000) {
+      // Disallow more than 2 week difference
+      this.setState({startDate: date, endDate: date.addDays(14)})
     } else {
       this.setState({startDate: date});
     }
   }
 
   updateDateEnd = (date) => {
-    if (date >= this.state.startDate) {
+    if (date === null) {
+      return
+    }
+    if (Math.abs(this.state.startDate - date) >= 1209600000) {
+      // Disallow more than 2 week difference
+      this.setState({startDate: date.addDays(-14), endDate: date})
+    } else if (date >= this.state.startDate) {
       this.setState({endDate: date});
+    } else {
+      this.setState({startDate: date, endDate: date});
     }
   }
 
