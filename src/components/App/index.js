@@ -13,6 +13,7 @@ import HomePage from '../Home';
 import PlaysPage from '../Plays';
 import PlayPage from '../Play';
 import AddPlayPage from '../AddPlay';
+import EditPlayPage from '../EditPlay';
 import AddConflictPage from '../AddConflict';
 import { Container, Row, Col} from 'react-bootstrap';
 
@@ -38,6 +39,7 @@ const App = () => (
             <Route path={ROUTES.PLAY} component={PlayPage} />
             <Route path={ROUTES.ADD_CONFLICT} component={AddConflictPage} />
             <Route path={ROUTES.ADD_PLAY} component={AddPlayPage} />
+            <Route path={ROUTES.EDIT_PLAY} component={EditPlayPage} />
           </Col>
         </Row>
       </Container>

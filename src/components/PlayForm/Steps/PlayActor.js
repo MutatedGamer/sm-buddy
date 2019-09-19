@@ -91,8 +91,7 @@ class PlayActor extends Component {
                           let day = data["day"];
                           let start = data["start"];
                           let end = data["end"];
-                          console.log(start);
-                          console.log(end);
+
                           isInvalid = isInvalid || end <= start;
                           return (
                             <Form.Row key={dataIndx}>

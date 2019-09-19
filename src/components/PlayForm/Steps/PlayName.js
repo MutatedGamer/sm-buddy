@@ -22,28 +22,26 @@ class PlayName extends Component {
   }
 
   getCalendars() {
-    console.log("getting calendars....");
-    this.props.firebase.gapi.client.load('calendar', 'v3').then(() => {
-      console.log("calendar loaded");
-      this.props.firebase.gapi.client.calendar.calendarList.list({
-      }).then(events => {
-        let calendars = new Map();
-        events.result.items.forEach(element => {
-          if (element.accessRole === "writer" || element.accessRole === "owner") {
-            calendars.set(element.summary, element.id);
-          };
-        });
-        this.setState({
-          calendars: calendars,
+    this.props.firebase.gapi.auth2.getAuthInstance().isSignedIn.listen(() => {
+      this.props.firebase.gapi.client.load('calendar', 'v3').then(() => {
+        this.props.firebase.gapi.client.calendar.calendarList.list({
+        }).then(events => {
+          let calendars = new Map();
+          events.result.items.forEach(element => {
+            if (element.accessRole === "writer" || element.accessRole === "owner") {
+              calendars.set(element.summary, element.id);
+            };
+          });
+          this.setState({
+            calendars: calendars,
+          });
         });
       });
     });
   }
 
   makeNewCalendar() {
-    console.log("making new calendar....");
     this.props.firebase.gapi.client.load('calendar', 'v3').then(() => {
-      console.log("calendar loaded");
       this.props.firebase.gapi.client.calendar.calendars.insert({
         summary: "SM Buddy - New Calendar Created on " + new Date().toDateString(),
       }).then(response => {

@@ -40,7 +40,7 @@ class PlayActor extends Component {
                     <Col>
                       <Form.Group>
                         <Form.Label>Title</Form.Label>
-                        <Form.Control isInvalid={val.title === ""} type="text" data-collection="scenes" data-attr="title" data-elementid={indx} placeholder="E.g. 1.1a"/>
+                        <Form.Control isInvalid={val.title === ""} type="text" data-collection="scenes" data-attr="title" data-elementid={indx} placeholder="E.g. 1.1a" defaultValue={val.title}/>
                       </Form.Group>
                       <Form.Group>
                         <Form.Label>Characters</Form.Label>
@@ -77,30 +77,56 @@ class PlayActor extends Component {
                       <Form.Group>
                         <Button variant="success" onClick={this.props.addCharacter.bind(this, "scenes", indx)}>Add Character</Button>
                       </Form.Group>
-                      <Form.Group>
-                        <Form.Label>Time for Tablework (minutes)</Form.Label>
-                        <Form.Control
-                          type="number"
-                          min={0}
-                          data-collection="scenes"
-                          data-attr="table"
-                          data-elementid={indx}
-                          value={val.table}
-                          onChange = {() => {}}
-                          />
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label>Time for Blocking (minutes)</Form.Label>
-                        <Form.Control
-                          type="number"
-                          min={0}
-                          data-collection="scenes"
-                          data-attr="block"
-                          data-elementid={indx}
-                          value={val.block}
-                          onChange = {() => {}}
-                          />
-                      </Form.Group>
+                      <Form.Row>
+                        <Form.Group as={Col}>
+                          <Form.Label>Time for Tablework (minutes)</Form.Label>
+                          <Form.Control
+                            type="number"
+                            min={0}
+                            data-collection="scenes"
+                            data-attr="table"
+                            data-elementid={indx}
+                            value={val.table}
+                            onChange = {() => {}}
+                            />
+                        </Form.Group>
+                        <Form.Group as={Col}>
+                          <Form.Label>Tabled?</Form.Label>
+                            <Form.Check
+                              type="checkbox"
+                              data-collection="scenes"
+                              data-attr="tabled"
+                              data-elementid={indx}
+                              checked={val.tabled}
+                              onChange = {() => {}}
+                              />
+                        </Form.Group>
+                      </Form.Row>
+                      <Form.Row>
+                        <Form.Group as={Col}>
+                          <Form.Label>Time for Blocking (minutes)</Form.Label>
+                          <Form.Control
+                            type="number"
+                            min={0}
+                            data-collection="scenes"
+                            data-attr="blocking"
+                            data-elementid={indx}
+                            value={val.blocking}
+                            onChange = {() => {}}
+                            />
+                        </Form.Group>
+                        <Form.Group as={Col}>
+                          <Form.Label>Blocked?</Form.Label>
+                            <Form.Check
+                              type="checkbox"
+                              data-collection="scenes"
+                              data-attr="blocked"
+                              data-elementid={indx}
+                              checked={val.blocked}
+                              onChange = {() => {}}
+                              />
+                        </Form.Group>
+                      </Form.Row>
                       <Form.Group>
                         <Button variant="danger" disabled={scenes.length === 1} onClick={this.props.deleteItem.bind(this, "scenes", indx)}>Delete Scene</Button>
                       </Form.Group>

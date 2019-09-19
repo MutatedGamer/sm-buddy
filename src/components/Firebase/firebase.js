@@ -25,10 +25,10 @@ class Firebase {
 
 		this.auth = app.auth();
     this.db = app.firestore();
+    this.batch = app.firestore().batch();
+    this.initGapi = this.initClient.bind(this)
     this.initClient().then(gapi  => {
       this.gapi = gapi;
-      console.log("HERE");
-      console.log(this.gapi);
     });
 
     this.db.settings({

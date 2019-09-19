@@ -6,6 +6,8 @@ class InfoPage extends Component {
     return (
       <div>
       { <Link to={ '/addconflict/' + this.props.values.playId }>Actor conflict submission page (send to actors!) </Link> }
+      <hr />
+      { <Link to={ '/edit-play/' + this.props.values.playId }>Edit this play </Link> }
       </div>
     );
   }
