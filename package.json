@@ -4,8 +4,8 @@
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "index.js",
   "engines": {
-	  "node": "10.16.0",
-	  "npm": "6.9.0"
+    "node": "10.16.0",
+    "npm": "6.9.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.15",
@@ -946,6 +946,7 @@
     "strip-eof": "^1.0.0",
     "strip-json-comments": "^2.0.1",
     "style-loader": "^0.23.1",
+    "styled-components": "^5.0.1",
     "stylehacks": "^4.0.3",
     "supports-color": "^5.5.0",
     "svgo": "^1.2.0",
