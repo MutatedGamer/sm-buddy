@@ -1,7 +1,8 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
-  Route
+  Route,
+  Switch
 } from 'react-router-dom';
 
 import Navigation from '../Navigation';
@@ -27,19 +28,21 @@ const App = () => (
       <Container fluid={true} className="p-2">
         <Row>
           <Col>
+            <Switch>
             <Route exact path={ROUTES.LANDING} component={LandingPage} />
-            <Route path={ROUTES.SIGN_IN} component={SignInPage} />
-            <Route path={ROUTES.GOOGLE_SIGN_IN} component={GoogleSignInPage} />
+            <Route exact path={ROUTES.SIGN_IN} component={SignInPage} />
+            <Route exact path={ROUTES.GOOGLE_SIGN_IN} component={GoogleSignInPage} />
             <Route
-              path={ROUTES.PASSWORD_FORGET}
+              exact path={ROUTES.PASSWORD_FORGET}
               component={PasswordForgetPage}
             />
-            <Route path={ROUTES.HOME} component={HomePage} />
-            <Route path={ROUTES.PLAYS} component={PlaysPage} />
-            <Route path={ROUTES.PLAY} component={PlayPage} />
-            <Route path={ROUTES.ADD_CONFLICT} component={AddConflictPage} />
-            <Route path={ROUTES.ADD_PLAY} component={AddPlayPage} />
-            <Route path={ROUTES.EDIT_PLAY} component={EditPlayPage} />
+            <Route exact path={ROUTES.HOME} component={HomePage} />
+            <Route exact path={ROUTES.PLAYS} component={PlaysPage} />
+            <Route exact path={ROUTES.PLAY} component={PlayPage} />
+            <Route exact path={ROUTES.ADD_CONFLICT} component={AddConflictPage} />
+            <Route exact path={ROUTES.ADD_PLAY} component={AddPlayPage} />
+            <Route exact path={ROUTES.EDIT_PLAY} component={EditPlayPage} />
+            </Switch>
           </Col>
         </Row>
       </Container>
