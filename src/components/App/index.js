@@ -2,8 +2,10 @@ import React from 'react';
 import {
   BrowserRouter as Router,
   Route,
-  Switch
+  Switch,
 } from 'react-router-dom';
+
+import createHistory from "history/createBrowserHistory"
 
 import Navigation from '../Navigation';
 import LandingPage from '../Landing';
@@ -22,7 +24,7 @@ import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
 
 const App = () => (
-  <Router>
+  <Router history = {createHistory}>
     <div>
       <Navigation />
       <Container fluid={true} className="p-2">
