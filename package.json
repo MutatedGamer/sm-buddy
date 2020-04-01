@@ -539,7 +539,7 @@
     "jsprim": "^1.4.1",
     "jsx-ast-utils": "^2.0.1",
     "killable": "^1.0.1",
-    "kind-of": "^3.2.2",
+    "kind-of": "^6.0.3",
     "kleur": "^2.0.2",
     "last-call-webpack-plugin": "^3.0.0",
     "lazy-cache": "^1.0.4",
