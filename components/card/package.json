@@ -6,7 +6,7 @@
     "dependencies": {
         "classnames": "^2.2.6",
         "prop-types": "^15.6.2",
-        "lodash": "^4.17.11",
+        "lodash": "^4.17.19",
         "@bit/semantic-org.semantic-ui-react.image": "0.85.0",
         "@bit/semantic-org.semantic-ui-react.internal.genericd": "0.85.0",
         "@bit/semantic-org.semantic-ui-react.internal.utils.index": "0.85.0"
